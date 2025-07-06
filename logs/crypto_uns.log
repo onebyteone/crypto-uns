@@ -1,0 +1,65 @@
+2025-07-06 11:56:55,492 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 11:57:50,045 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 11:57:50,057 - CryptoUNS - INFO - Inicializando CryptoUNS...
+2025-07-06 11:57:50,058 - CryptoUNS - INFO - Versión: 1.0.0
+2025-07-06 11:57:50,058 - CryptoUNS - INFO - Autor: CryptoUNS Team
+2025-07-06 11:57:50,530 - CryptoUNS - INFO - Ventana principal creada exitosamente
+2025-07-06 11:57:51,125 - CryptoUNS - INFO - Interfaz temporal creada exitosamente
+2025-07-06 11:57:51,126 - CryptoUNS - INFO - Iniciando bucle principal de la aplicación
+2025-07-06 11:58:17,005 - CryptoUNS - INFO - Cerrando aplicación
+2025-07-06 11:58:17,006 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:03:41,032 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:03:41,044 - CryptoUNS - INFO - Inicializando CryptoUNS...
+2025-07-06 12:03:41,044 - CryptoUNS - INFO - Versión: 1.0.0
+2025-07-06 12:03:41,044 - CryptoUNS - INFO - Autor: CryptoUNS Team
+2025-07-06 12:03:41,140 - CryptoUNS - INFO - Ventana principal creada exitosamente
+2025-07-06 12:03:41,668 - CryptoUNS - INFO - Interfaz temporal creada exitosamente
+2025-07-06 12:03:41,669 - CryptoUNS - INFO - Iniciando bucle principal de la aplicación
+2025-07-06 12:03:50,502 - CryptoUNS - INFO - Cerrando aplicación
+2025-07-06 12:03:50,502 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:17:32,616 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:17:32,630 - CryptoUNS - INFO - Inicializando CryptoUNS...
+2025-07-06 12:17:32,630 - CryptoUNS - INFO - Versión: 1.0.0
+2025-07-06 12:17:32,630 - CryptoUNS - INFO - Autor: CryptoUNS Team
+2025-07-06 12:17:32,730 - CryptoUNS - INFO - Ventana principal creada exitosamente
+2025-07-06 12:17:33,264 - CryptoUNS - INFO - Interfaz temporal creada exitosamente
+2025-07-06 12:17:33,266 - CryptoUNS - INFO - Iniciando bucle principal de la aplicación
+2025-07-06 12:17:45,813 - CryptoUNS - INFO - Cerrando aplicación
+2025-07-06 12:17:45,814 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:18:44,901 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:18:44,912 - CryptoUNS - INFO - Inicializando CryptoUNS...
+2025-07-06 12:18:44,912 - CryptoUNS - INFO - Versión: 1.0.0
+2025-07-06 12:18:44,912 - CryptoUNS - INFO - Autor: CryptoUNS Team
+2025-07-06 12:18:45,008 - CryptoUNS - INFO - Ventana principal creada exitosamente
+2025-07-06 12:18:45,544 - CryptoUNS - INFO - Interfaz temporal creada exitosamente
+2025-07-06 12:18:45,545 - CryptoUNS - INFO - Iniciando bucle principal de la aplicación
+2025-07-06 12:19:00,239 - CryptoUNS - INFO - Cerrando aplicación
+2025-07-06 12:19:00,240 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:35:41,291 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:35:41,291 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:35:41,292 - CryptoUNS - ERROR - Error al importar módulos: cannot import name 'CryptoError' from 'src.utils.exceptions' (C:\VSCode\Python\crypto-uns\src\utils\exceptions.py)
+2025-07-06 12:35:41,292 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:36:08,484 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:36:08,484 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:36:08,485 - CryptoUNS - ERROR - Error al importar módulos: cannot import name 'Config' from 'src.data.config' (C:\VSCode\Python\crypto-uns\src\data\config.py)
+2025-07-06 12:36:08,485 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:36:35,894 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:36:35,894 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:36:35,895 - CryptoUNS - ERROR - Error al importar módulos: cannot import name 'THEMES' from 'src.data.themes' (C:\VSCode\Python\crypto-uns\src\data\themes.py)
+2025-07-06 12:36:35,895 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:36:56,793 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:36:56,794 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:36:56,794 - CryptoUNS - ERROR - Error al importar módulos: cannot import name 'BlockchainSimulator' from 'src.crypto.tools' (C:\VSCode\Python\crypto-uns\src\crypto\tools.py)
+2025-07-06 12:36:56,795 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:37:22,810 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:37:22,810 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:37:22,810 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 12:37:52,960 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:44:23,234 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:44:23,234 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:44:23,235 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 12:44:52,975 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 12:46:56,775 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 12:46:56,775 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 12:46:56,777 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 12:47:12,390 - CryptoUNS - INFO - Aplicación terminada

@@ -1,0 +1,34 @@
+# CryptoUNS - Dependencias del Proyecto
+# Sistema Criptografico Integral
+
+# ===== CORE DEPENDENCIES =====
+# Interfaz grafica moderna
+ttkbootstrap==1.10.1
+
+# Manejo de imagenes
+pillow==10.0.0
+
+# Funcionalidades de clipboard
+pyperclip==1.8.2
+
+# Criptografia moderna
+cryptography==41.0.0
+pycryptodome==3.18.0
+
+# ===== DESARROLLO Y TESTING =====
+# Testing framework (opcional)
+pytest==7.4.0
+
+# Empaquetado de aplicaciones
+pyinstaller==5.13.0
+
+# ===== UTILIDADES ADICIONALES =====
+# Funciones matematicas avanzadas
+numpy==1.24.3
+
+# ===== DOCUMENTACION =====
+# Generacion de documentacion
+markdown==3.4.4
+
+# ===== INSTALACION =====
+# pip install -r requirements.txt
