@@ -82,6 +82,8 @@ class CryptoUNSApp:
         
         # Botones de navegación
         self.nav_buttons = {}
+        self.button_styles = {}  # Para guardar estilos originales
+        self.current_screen = 'home'
         
         # Sección Inicio
         self.create_nav_button("🏠 Inicio", "home", PRIMARY)
@@ -122,6 +124,7 @@ class CryptoUNSApp:
         )
         btn.pack(pady=2, fill="x")
         self.nav_buttons[key] = btn
+        self.button_styles[key] = style  # Guardar estilo original
     
     def create_nav_separator(self, text):
         """Crear un separador con texto"""
@@ -194,37 +197,62 @@ class CryptoUNSApp:
         for widget in self.content_frame.winfo_children():
             widget.destroy()
         
-        # Actualizar el botón activo
-        for key, btn in self.nav_buttons.items():
-            if key == screen:
-                btn.configure(bootstyle=f"{btn.cget('bootstyle')}-outline")
+    def navigate_to(self, screen):
+        """Navegar a una pantalla específica"""
+        try:
+            # Limpiar el área de contenido
+            for widget in self.content_frame.winfo_children():
+                widget.destroy()
+            
+            # Actualizar el botón activo usando estilos guardados
+            for key, btn in self.nav_buttons.items():
+                try:
+                    original_style = self.button_styles.get(key, 'primary')
+                    if key == screen:
+                        # Botón activo - usar estilo outline
+                        btn.configure(bootstyle=f"{original_style}-outline")
+                        self.current_screen = screen
+                    else:
+                        # Botón inactivo - usar estilo original
+                        btn.configure(bootstyle=original_style)
+                except Exception:
+                    # Si hay error, usar método alternativo
+                    try:
+                        if key == screen:
+                            btn.configure(relief='sunken')
+                        else:
+                            btn.configure(relief='raised')
+                    except Exception:
+                        pass  # Ignorar completamente si nada funciona
+            
+            # Mostrar la pantalla correspondiente
+            screen_methods = {
+                'home': self.show_home_screen,
+                'caesar': self.show_caesar_screen,
+                'vigenere': self.show_vigenere_screen,
+                'playfair': self.show_playfair_screen,
+                'kasiski': self.show_kasiski_screen,
+                'rsa': self.show_rsa_screen,
+                'hash': self.show_hash_screen,
+                'des': self.show_des_screen,
+                'signature': self.show_signature_screen,
+                'huffman': self.show_huffman_screen,
+                'blockchain': self.show_blockchain_screen,
+                'integrity': self.show_integrity_screen,
+                'config': self.show_config_screen,
+                'about': self.show_about_screen
+            }
+            
+            if screen in screen_methods:
+                screen_methods[screen]()
+                self.update_status(f"Pantalla: {screen.title()}")
             else:
-                style = btn.cget('bootstyle').replace('-outline', '')
-                btn.configure(bootstyle=style)
-        
-        # Mostrar la pantalla correspondiente
-        screen_methods = {
-            'home': self.show_home_screen,
-            'caesar': self.show_caesar_screen,
-            'vigenere': self.show_vigenere_screen,
-            'playfair': self.show_playfair_screen,
-            'kasiski': self.show_kasiski_screen,
-            'rsa': self.show_rsa_screen,
-            'hash': self.show_hash_screen,
-            'des': self.show_des_screen,
-            'signature': self.show_signature_screen,
-            'huffman': self.show_huffman_screen,
-            'blockchain': self.show_blockchain_screen,
-            'integrity': self.show_integrity_screen,
-            'config': self.show_config_screen,
-            'about': self.show_about_screen
-        }
-        
-        if screen in screen_methods:
-            screen_methods[screen]()
-            self.update_status(f"Pantalla: {screen.title()}")
-        else:
-            self.show_error(f"Pantalla no encontrada: {screen}")
+                self.show_error(f"Pantalla no encontrada: {screen}")
+                
+        except Exception as e:
+            self.show_error(f"Error al navegar a {screen}: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def show_home_screen(self):
         """Mostrar la pantalla de inicio"""
@@ -317,7 +345,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -477,7 +505,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -716,7 +744,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -853,7 +881,7 @@ class CryptoUNSApp:
             if not key:
                 key = "SECRETO"
             
-            matrix = self.playfair.generate_matrix(key)
+            matrix = self.playfair.create_matrix(key)
             
             # Actualizar labels de la matriz
             for i in range(5):
@@ -938,7 +966,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -1188,7 +1216,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -1294,29 +1322,29 @@ class CryptoUNSApp:
             self.update_status(f"Generando claves RSA de {key_size} bits...")
             
             # Generar claves
-            keys = self.rsa.generate_keys(key_size)
-            self.current_public_key = keys['public_key']
-            self.current_private_key = keys['private_key']
+            public_key, private_key = self.rsa.generate_keys()
+            self.current_public_key = public_key
+            self.current_private_key = private_key
             
             # Mostrar clave pública
             self.rsa_public_key.configure(state="normal")
             self.rsa_public_key.delete("1.0", tk.END)
-            public_text = f"Clave Pública (n, e):\n\n"
-            public_text += f"n = {keys['public_key']['n']}\n\n"
-            public_text += f"e = {keys['public_key']['e']}\n\n"
+            public_text = f"Clave Pública (e, n):\n\n"
+            public_text += f"e = {public_key[0]}\n\n"
+            public_text += f"n = {public_key[1]}\n\n"
             public_text += f"Tamaño: {key_size} bits\n"
-            public_text += f"Longitud de n: {len(str(keys['public_key']['n']))} dígitos"
+            public_text += f"Longitud de n: {len(str(public_key[1]))} dígitos"
             self.rsa_public_key.insert("1.0", public_text)
             self.rsa_public_key.configure(state="disabled")
             
             # Mostrar clave privada
             self.rsa_private_key.configure(state="normal")
             self.rsa_private_key.delete("1.0", tk.END)
-            private_text = f"Clave Privada (n, d):\n\n"
-            private_text += f"n = {keys['private_key']['n']}\n\n"
-            private_text += f"d = {keys['private_key']['d']}\n\n"
+            private_text = f"Clave Privada (d, n):\n\n"
+            private_text += f"d = {private_key[0]}\n\n"
+            private_text += f"n = {private_key[1]}\n\n"
             private_text += f"Tamaño: {key_size} bits\n"
-            private_text += f"Longitud de d: {len(str(keys['private_key']['d']))} dígitos"
+            private_text += f"Longitud de d: {len(str(private_key[0]))} dígitos"
             self.rsa_private_key.insert("1.0", private_text)
             self.rsa_private_key.configure(state="disabled")
             
@@ -1324,15 +1352,14 @@ class CryptoUNSApp:
             self.rsa_info.configure(state="normal")
             self.rsa_info.delete("1.0", tk.END)
             info_text = f"Información de Generación RSA:\n\n"
-            info_text += f"Primos utilizados:\n"
-            info_text += f"p = {keys['p']}\n"
-            info_text += f"q = {keys['q']}\n\n"
-            info_text += f"Cálculos:\n"
-            info_text += f"n = p × q = {keys['public_key']['n']}\n"
-            info_text += f"φ(n) = (p-1) × (q-1) = {keys['phi_n']}\n"
-            info_text += f"e = {keys['public_key']['e']} (exponente público)\n"
-            info_text += f"d = {keys['private_key']['d']} (exponente privado)\n\n"
-            info_text += f"Verificación: (e × d) mod φ(n) = {(keys['public_key']['e'] * keys['private_key']['d']) % keys['phi_n']}\n\n"
+            info_text += f"Claves generadas:\n"
+            info_text += f"e (exponente público) = {public_key[0]}\n"
+            info_text += f"d (exponente privado) = {private_key[0]}\n"
+            info_text += f"n (módulo) = {public_key[1]}\n\n"
+            info_text += f"Propiedades:\n"
+            info_text += f"• n es el producto de dos primos grandes\n"
+            info_text += f"• e y d son inversos modulares\n"
+            info_text += f"• Longitud de n: {len(str(public_key[1]))} dígitos\n\n"
             info_text += f"Seguridad:\n"
             info_text += f"• Factorización de n es computacionalmente difícil\n"
             info_text += f"• Clave pública se puede compartir libremente\n"
@@ -1486,7 +1513,7 @@ class CryptoUNSApp:
         
         # Frame principal
         main_frame = ttb.Frame(self.content_frame)
-        main_frame.grid(row=2, column=0, sticky="nsew", fill="both", expand=True)
+        main_frame.grid(row=2, column=0, sticky="nsew")
         
         # Configurar grilla
         main_frame.grid_columnconfigure(0, weight=1)
@@ -1710,44 +1737,1517 @@ class CryptoUNSApp:
         self.calculated_hashes.clear()
     
     def show_des_screen(self):
-        """Mostrar pantalla de DES (implementar después)"""
-        ttb.Label(
+        """Mostrar la pantalla del cifrado DES"""
+        # Título
+        title = ttb.Label(
             self.content_frame,
-            text="🔏 DES - En desarrollo",
+            text="🔏 Cifrado DES",
             font=("Arial", 20, "bold")
-        ).pack(pady=50)
+        )
+        title.grid(row=0, column=0, pady=(0, 20), sticky="w")
+        
+        # Descripción
+        desc = ttb.Label(
+            self.content_frame,
+            text="DES (Data Encryption Standard) es un algoritmo de cifrado simétrico que utiliza\n"
+                 "una clave de 64 bits y soporta modos ECB y CBC.",
+            font=("Arial", 10),
+            justify="left"
+        )
+        desc.grid(row=1, column=0, pady=(0, 20), sticky="w")
+        
+        # Frame principal
+        main_frame = ttb.Frame(self.content_frame)
+        main_frame.grid(row=2, column=0, sticky="nsew")
+        
+        # Configurar grilla
+        main_frame.grid_columnconfigure(0, weight=1)
+        main_frame.grid_columnconfigure(1, weight=1)
+        
+        # Panel de entrada
+        input_frame = ttb.LabelFrame(main_frame, text="Entrada", padding=10)
+        input_frame.grid(row=0, column=0, padx=(0, 10), pady=(0, 10), sticky="nsew")
+        
+        # Campo de texto
+        ttb.Label(input_frame, text="Texto:").pack(anchor="w")
+        self.des_text = tk.Text(input_frame, height=6, width=40)
+        self.des_text.pack(fill="both", expand=True, pady=(5, 10))
+        
+        # Campo de clave
+        ttb.Label(input_frame, text="Clave (8 caracteres):").pack(anchor="w")
+        self.des_key = ttb.Entry(input_frame, width=20, show="*")
+        self.des_key.pack(anchor="w", pady=(5, 10))
+        self.des_key.insert(0, "SECRETKY")
+        
+        # Validación en tiempo real
+        self.des_key.bind('<KeyRelease>', self.validate_des_key)
+        
+        # Selector de modo
+        ttb.Label(input_frame, text="Modo de operación:").pack(anchor="w")
+        self.des_mode = ttb.Combobox(
+            input_frame, 
+            values=["ECB", "CBC"], 
+            state="readonly", 
+            width=10
+        )
+        self.des_mode.pack(anchor="w", pady=(5, 10))
+        self.des_mode.set("ECB")
+        
+        # Vector de inicialización (solo para CBC)
+        ttb.Label(input_frame, text="IV (8 caracteres, solo CBC):").pack(anchor="w")
+        self.des_iv = ttb.Entry(input_frame, width=20)
+        self.des_iv.pack(anchor="w", pady=(5, 10))
+        self.des_iv.insert(0, "INITVECT")
+        
+        # Botones
+        button_frame = ttb.Frame(input_frame)
+        button_frame.pack(fill="x")
+        
+        ttb.Button(
+            button_frame,
+            text="Cifrar",
+            bootstyle=SUCCESS,
+            command=self.des_encrypt
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Descifrar",
+            bootstyle=WARNING,
+            command=self.des_decrypt
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Limpiar",
+            bootstyle=SECONDARY,
+            command=self.clear_des_fields
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Generar Clave",
+            bootstyle=INFO,
+            command=self.generate_des_key
+        ).pack(side="left")
+        
+        # Panel de salida
+        output_frame = ttb.LabelFrame(main_frame, text="Resultado", padding=10)
+        output_frame.grid(row=0, column=1, padx=(10, 0), pady=(0, 10), sticky="nsew")
+        
+        self.des_result = tk.Text(output_frame, height=6, width=40, state="disabled")
+        self.des_result.pack(fill="both", expand=True)
+        
+        # Panel de información
+        info_frame = ttb.LabelFrame(main_frame, text="Información DES", padding=10)
+        info_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=(10, 0))
+        
+        self.des_info = tk.Text(info_frame, height=8, state="disabled")
+        self.des_info.pack(fill="both", expand=True)
+        
+        # Actualizar información inicial
+        self.update_des_info()
+    
+    def validate_des_key(self, event=None):
+        """Validar clave DES en tiempo real"""
+        key = self.des_key.get()
+        if len(key) > 8:
+            self.des_key.delete(8, tk.END)
+            self.update_status("Clave DES limitada a 8 caracteres")
+        elif len(key) < 8:
+            self.update_status(f"Clave DES: {len(key)}/8 caracteres")
+        else:
+            self.update_status("Clave DES completa (8 caracteres)")
+    
+    def des_encrypt(self):
+        """Cifrar texto con DES"""
+        try:
+            text = self.des_text.get("1.0", tk.END).strip()
+            key = self.des_key.get()
+            mode = self.des_mode.get()
+            iv = self.des_iv.get() if mode == "CBC" else None
+            
+            if not text:
+                self.show_warning("Por favor ingrese un texto para cifrar")
+                return
+            
+            if len(key) != 8:
+                self.show_warning("La clave debe tener exactamente 8 caracteres")
+                return
+            
+            if mode == "CBC" and len(iv) != 8:
+                self.show_warning("El IV debe tener exactamente 8 caracteres para modo CBC")
+                return
+            
+            # Cifrar según el modo
+            if mode == "ECB":
+                encrypted = self.des.encrypt_ecb(text, key)
+            else:  # CBC
+                encrypted = self.des.encrypt_cbc(text, key, iv)
+            
+            # Mostrar resultado
+            self.display_result(self.des_result, encrypted)
+            self.display_des_operation_info("Cifrado", text, key, mode, iv, encrypted)
+            
+            self.update_status(f"Texto cifrado con DES-{mode} exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al cifrar con DES: {str(e)}")
+    
+    def des_decrypt(self):
+        """Descifrar texto con DES"""
+        try:
+            text = self.des_text.get("1.0", tk.END).strip()
+            key = self.des_key.get()
+            mode = self.des_mode.get()
+            iv = self.des_iv.get() if mode == "CBC" else None
+            
+            if not text:
+                self.show_warning("Por favor ingrese un texto para descifrar")
+                return
+            
+            if len(key) != 8:
+                self.show_warning("La clave debe tener exactamente 8 caracteres")
+                return
+            
+            if mode == "CBC" and len(iv) != 8:
+                self.show_warning("El IV debe tener exactamente 8 caracteres para modo CBC")
+                return
+            
+            # Descifrar según el modo
+            if mode == "ECB":
+                decrypted = self.des.decrypt_ecb(text, key)
+            else:  # CBC
+                decrypted = self.des.decrypt_cbc(text, key, iv)
+            
+            # Mostrar resultado
+            self.display_result(self.des_result, decrypted)
+            self.display_des_operation_info("Descifrado", text, key, mode, iv, decrypted)
+            
+            self.update_status(f"Texto descifrado con DES-{mode} exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al descifrar con DES: {str(e)}")
+    
+    def generate_des_key(self):
+        """Generar una clave DES aleatoria"""
+        import random
+        import string
+        
+        # Generar clave aleatoria de 8 caracteres
+        key = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        
+        self.des_key.delete(0, tk.END)
+        self.des_key.insert(0, key)
+        
+        self.update_status("Clave DES generada aleatoriamente")
+    
+    def display_des_operation_info(self, operation, text, key, mode, iv, result):
+        """Mostrar información de la operación DES"""
+        self.des_info.configure(state="normal")
+        self.des_info.delete("1.0", tk.END)
+        
+        info_text = f"Información de {operation} DES:\n\n"
+        info_text += f"Operación: {operation}\n"
+        info_text += f"Modo: DES-{mode}\n"
+        info_text += f"Clave: {'*' * len(key)} (8 caracteres)\n"
+        if mode == "CBC":
+            info_text += f"IV: {iv}\n"
+        info_text += f"\nTexto original ({len(text)} caracteres):\n{text[:100]}{'...' if len(text) > 100 else ''}\n"
+        info_text += f"\nResultado ({len(result)} caracteres):\n{result[:100]}{'...' if len(result) > 100 else ''}\n\n"
+        
+        # Información técnica
+        info_text += f"Detalles técnicos:\n"
+        info_text += f"• Algoritmo: Data Encryption Standard (DES)\n"
+        info_text += f"• Tamaño de bloque: 64 bits (8 bytes)\n"
+        info_text += f"• Tamaño de clave: 64 bits (8 bytes)\n"
+        info_text += f"• Modo de operación: {mode}\n"
+        
+        if mode == "ECB":
+            info_text += f"• ECB: Cada bloque se cifra independientemente\n"
+            info_text += f"• Ventaja: Simple y paralelo\n"
+            info_text += f"• Desventaja: Patrones visibles en datos similares\n"
+        else:
+            info_text += f"• CBC: Cada bloque depende del anterior\n"
+            info_text += f"• Vector de inicialización requerido\n"
+            info_text += f"• Ventaja: Oculta patrones en los datos\n"
+            info_text += f"• Desventaja: No es paralelo para cifrado\n"
+        
+        info_text += f"\nNota de seguridad:\n"
+        info_text += f"DES es considerado inseguro para aplicaciones modernas\n"
+        info_text += f"debido a su tamaño de clave relativamente pequeño (56 bits efectivos)."
+        
+        self.des_info.insert("1.0", info_text)
+        self.des_info.configure(state="disabled")
+    
+    def update_des_info(self):
+        """Actualizar información general de DES"""
+        self.des_info.configure(state="normal")
+        self.des_info.delete("1.0", tk.END)
+        
+        info_text = """Información sobre DES (Data Encryption Standard):
+
+DES es un algoritmo de cifrado simétrico desarrollado por IBM en los años 1970
+y adoptado como estándar por el gobierno de Estados Unidos.
+
+Características principales:
+• Algoritmo de cifrado en bloques
+• Tamaño de bloque: 64 bits (8 bytes)
+• Tamaño de clave: 64 bits (56 bits efectivos + 8 bits de paridad)
+• 16 rondas de procesamiento
+• Utiliza redes de Feistel
+
+Modos de operación implementados:
+• ECB (Electronic Codebook): Cada bloque se cifra independientemente
+• CBC (Cipher Block Chaining): Cada bloque depende del anterior
+
+Estado actual de seguridad:
+⚠️ DES es considerado inseguro para aplicaciones modernas debido a:
+• Tamaño de clave pequeño (56 bits efectivos)
+• Vulnerable a ataques de fuerza bruta
+• Reemplazado por AES en aplicaciones críticas
+
+Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
+        
+        self.des_info.insert("1.0", info_text)
+        self.des_info.configure(state="disabled")
+    
+    def clear_des_fields(self):
+        """Limpiar campos de DES"""
+        self.des_text.delete("1.0", tk.END)
+        self.des_key.delete(0, tk.END)
+        self.des_key.insert(0, "SECRETKY")
+        self.des_mode.set("ECB")
+        self.des_iv.delete(0, tk.END)
+        self.des_iv.insert(0, "INITVECT")
+        
+        self.des_result.configure(state="normal")
+        self.des_result.delete("1.0", tk.END)
+        self.des_result.configure(state="disabled")
+        
+        self.update_des_info()
     
     def show_signature_screen(self):
-        """Mostrar pantalla de Firma Digital (implementar después)"""
-        ttb.Label(
+        """Mostrar la pantalla de Firma Digital"""
+        # Título
+        title = ttb.Label(
             self.content_frame,
-            text="✍️ Firma Digital - En desarrollo",
+            text="✍️ Firma Digital",
             font=("Arial", 20, "bold")
-        ).pack(pady=50)
+        )
+        title.grid(row=0, column=0, pady=(0, 20), sticky="w")
+        
+        # Descripción
+        desc = ttb.Label(
+            self.content_frame,
+            text="La firma digital proporciona autenticidad e integridad mediante criptografía\n"
+                 "asimétrica. Combina hash del mensaje con cifrado RSA de la clave privada.",
+            font=("Arial", 10),
+            justify="left"
+        )
+        desc.grid(row=1, column=0, pady=(0, 20), sticky="w")
+        
+        # Frame principal
+        main_frame = ttb.Frame(self.content_frame)
+        main_frame.grid(row=2, column=0, sticky="nsew")
+        
+        # Configurar grilla
+        main_frame.grid_columnconfigure(0, weight=1)
+        main_frame.grid_columnconfigure(1, weight=1)
+        
+        # Panel de mensaje
+        message_frame = ttb.LabelFrame(main_frame, text="Mensaje", padding=10)
+        message_frame.grid(row=0, column=0, padx=(0, 10), pady=(0, 10), sticky="nsew")
+        
+        # Campo de mensaje
+        ttb.Label(message_frame, text="Mensaje a firmar/verificar:").pack(anchor="w")
+        self.signature_message = tk.Text(message_frame, height=6, width=40)
+        self.signature_message.pack(fill="both", expand=True, pady=(5, 10))
+        
+        # Configuración
+        config_frame = ttb.Frame(message_frame)
+        config_frame.pack(fill="x", pady=(0, 10))
+        
+        ttb.Label(config_frame, text="Algoritmo Hash:").pack(anchor="w")
+        self.signature_hash_algo = ttb.Combobox(
+            config_frame, 
+            values=["SHA-256", "Hash-256"], 
+            state="readonly", 
+            width=15
+        )
+        self.signature_hash_algo.pack(anchor="w", pady=(5, 10))
+        self.signature_hash_algo.set("SHA-256")
+        
+        # Botones de operación
+        button_frame = ttb.Frame(message_frame)
+        button_frame.pack(fill="x")
+        
+        ttb.Button(
+            button_frame,
+            text="Generar Claves",
+            bootstyle=INFO,
+            command=self.generate_signature_keys
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Firmar",
+            bootstyle=SUCCESS,
+            command=self.sign_message
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Verificar",
+            bootstyle=WARNING,
+            command=self.verify_signature
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Limpiar",
+            bootstyle=SECONDARY,
+            command=self.clear_signature_fields
+        ).pack(side="left")
+        
+        # Panel de firma
+        signature_frame = ttb.LabelFrame(main_frame, text="Firma Digital", padding=10)
+        signature_frame.grid(row=0, column=1, padx=(10, 0), pady=(0, 10), sticky="nsew")
+        
+        ttb.Label(signature_frame, text="Firma generada:").pack(anchor="w")
+        self.signature_result = tk.Text(signature_frame, height=4, width=40, state="disabled")
+        self.signature_result.pack(fill="both", expand=True, pady=(5, 10))
+        
+        ttb.Label(signature_frame, text="Estado de verificación:").pack(anchor="w")
+        self.signature_verification = tk.Text(signature_frame, height=2, width=40, state="disabled")
+        self.signature_verification.pack(fill="both", expand=True)
+        
+        # Panel de información de claves
+        keys_frame = ttb.LabelFrame(main_frame, text="Información de Claves", padding=10)
+        keys_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=(10, 0))
+        
+        # Notebook para claves
+        self.signature_notebook = ttb.Notebook(keys_frame)
+        self.signature_notebook.pack(fill="both", expand=True)
+        
+        # Pestaña de proceso
+        process_frame = ttb.Frame(self.signature_notebook)
+        self.signature_notebook.add(process_frame, text="Proceso de Firma")
+        
+        self.signature_process = tk.Text(process_frame, height=8, state="disabled")
+        self.signature_process.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Pestaña de claves
+        keys_info_frame = ttb.Frame(self.signature_notebook)
+        self.signature_notebook.add(keys_info_frame, text="Claves RSA")
+        
+        self.signature_keys_info = tk.Text(keys_info_frame, height=8, state="disabled")
+        self.signature_keys_info.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Variables para las claves y firma
+        self.signature_keys = None
+        self.current_signature = None
+        self.current_message_hash = None
+        
+        # Mostrar información inicial
+        self.show_signature_info()
+    
+    def generate_signature_keys(self):
+        """Generar claves para firma digital"""
+        try:
+            self.update_status("Generando claves RSA para firma digital...")
+            
+            # Generar claves RSA
+            self.signature_keys = self.signature.generate_keys(1024)  # 1024 bits para rapidez
+            
+            # Mostrar información de claves
+            self.signature_keys_info.configure(state="normal")
+            self.signature_keys_info.delete("1.0", tk.END)
+            
+            keys_text = f"Claves RSA para Firma Digital:\n\n"
+            keys_text += f"Clave Pública (para verificación):\n"
+            keys_text += f"n = {self.signature_keys['public_key']['n']}\n"
+            keys_text += f"e = {self.signature_keys['public_key']['e']}\n\n"
+            keys_text += f"Clave Privada (para firmado):\n"
+            keys_text += f"n = {self.signature_keys['private_key']['n']}\n"
+            keys_text += f"d = {self.signature_keys['private_key']['d']}\n\n"
+            keys_text += f"Información adicional:\n"
+            keys_text += f"p = {self.signature_keys['p']}\n"
+            keys_text += f"q = {self.signature_keys['q']}\n"
+            keys_text += f"φ(n) = {self.signature_keys['phi_n']}\n\n"
+            keys_text += f"Uso:\n"
+            keys_text += f"• Clave privada: Firmar documentos (mantener secreta)\n"
+            keys_text += f"• Clave pública: Verificar firmas (compartir libremente)"
+            
+            self.signature_keys_info.insert("1.0", keys_text)
+            self.signature_keys_info.configure(state="disabled")
+            
+            self.update_status("Claves RSA para firma digital generadas exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al generar claves: {str(e)}")
+    
+    def sign_message(self):
+        """Firmar mensaje"""
+        try:
+            message = self.signature_message.get("1.0", tk.END).strip()
+            hash_algo = self.signature_hash_algo.get()
+            
+            if not message:
+                self.show_warning("Por favor ingrese un mensaje para firmar")
+                return
+            
+            if not self.signature_keys:
+                self.show_warning("Por favor genere las claves RSA primero")
+                return
+            
+            # Firmar mensaje
+            if hash_algo == "SHA-256":
+                signature_data = self.signature.sign(message, self.signature_keys)
+            else:  # Hash-256
+                signature_data = self.signature.sign_with_custom_hash(message, self.signature_keys)
+            
+            self.current_signature = signature_data['signature']
+            self.current_message_hash = signature_data['message_hash']
+            
+            # Mostrar firma
+            self.signature_result.configure(state="normal")
+            self.signature_result.delete("1.0", tk.END)
+            self.signature_result.insert("1.0", str(self.current_signature))
+            self.signature_result.configure(state="disabled")
+            
+            # Mostrar proceso
+            self.display_signature_process("Firmado", message, hash_algo, signature_data)
+            
+            # Limpiar verificación anterior
+            self.signature_verification.configure(state="normal")
+            self.signature_verification.delete("1.0", tk.END)
+            self.signature_verification.insert("1.0", "Mensaje firmado. Use 'Verificar' para validar la firma.")
+            self.signature_verification.configure(state="disabled")
+            
+            self.update_status("Mensaje firmado exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al firmar mensaje: {str(e)}")
+    
+    def verify_signature(self):
+        """Verificar firma"""
+        try:
+            message = self.signature_message.get("1.0", tk.END).strip()
+            hash_algo = self.signature_hash_algo.get()
+            
+            if not message:
+                self.show_warning("Por favor ingrese el mensaje original")
+                return
+            
+            if not self.signature_keys:
+                self.show_warning("Por favor genere las claves RSA primero")
+                return
+            
+            if not self.current_signature:
+                self.show_warning("Por favor firme el mensaje primero")
+                return
+            
+            # Verificar firma
+            if hash_algo == "SHA-256":
+                is_valid = self.signature.verify(message, self.current_signature, self.signature_keys['public_key'])
+            else:  # Hash-256
+                is_valid = self.signature.verify_with_custom_hash(message, self.current_signature, self.signature_keys['public_key'])
+            
+            # Mostrar resultado de verificación
+            self.signature_verification.configure(state="normal")
+            self.signature_verification.delete("1.0", tk.END)
+            
+            if is_valid:
+                verification_text = "✅ FIRMA VÁLIDA\nEl mensaje es auténtico y no ha sido modificado."
+                self.signature_verification.configure(bg="#d4edda")
+            else:
+                verification_text = "❌ FIRMA INVÁLIDA\nEl mensaje ha sido modificado o la firma es incorrecta."
+                self.signature_verification.configure(bg="#f8d7da")
+            
+            self.signature_verification.insert("1.0", verification_text)
+            self.signature_verification.configure(state="disabled")
+            
+            # Mostrar proceso de verificación
+            verification_data = {
+                'signature': self.current_signature,
+                'message_hash': self.current_message_hash,
+                'is_valid': is_valid
+            }
+            self.display_signature_process("Verificación", message, hash_algo, verification_data)
+            
+            self.update_status(f"Verificación completada: {'Válida' if is_valid else 'Inválida'}")
+            
+        except Exception as e:
+            self.show_error(f"Error al verificar firma: {str(e)}")
+    
+    def display_signature_process(self, operation, message, hash_algo, data):
+        """Mostrar información del proceso de firma"""
+        self.signature_process.configure(state="normal")
+        self.signature_process.delete("1.0", tk.END)
+        
+        process_text = f"Proceso de {operation} - Firma Digital:\n\n"
+        process_text += f"1. Mensaje original:\n   {message[:80]}{'...' if len(message) > 80 else ''}\n\n"
+        
+        if operation == "Firmado":
+            process_text += f"2. Hash del mensaje ({hash_algo}):\n   {data['message_hash']}\n\n"
+            process_text += f"3. Cifrado del hash con clave privada:\n   Signature = Hash^d mod n\n"
+            process_text += f"   d = {str(self.signature_keys['private_key']['d'])[:20]}...\n"
+            process_text += f"   n = {str(self.signature_keys['private_key']['n'])[:20]}...\n\n"
+            process_text += f"4. Firma digital generada:\n   {str(data['signature'])[:60]}...\n\n"
+            process_text += f"Resultado: Mensaje firmado exitosamente\n"
+            process_text += f"• La firma puede verificarse con la clave pública\n"
+            process_text += f"• Garantiza autenticidad e integridad del mensaje"
+        
+        else:  # Verificación
+            process_text += f"2. Hash del mensaje recibido ({hash_algo}):\n   {data['message_hash']}\n\n"
+            process_text += f"3. Descifrado de la firma con clave pública:\n   Hash_descifrado = Signature^e mod n\n"
+            process_text += f"   e = {self.signature_keys['public_key']['e']}\n"
+            process_text += f"   n = {str(self.signature_keys['public_key']['n'])[:20]}...\n\n"
+            process_text += f"4. Comparación de hashes:\n"
+            process_text += f"   Hash calculado == Hash descifrado: {'SÍ' if data['is_valid'] else 'NO'}\n\n"
+            process_text += f"Resultado: {'✅ FIRMA VÁLIDA' if data['is_valid'] else '❌ FIRMA INVÁLIDA'}\n"
+            
+            if data['is_valid']:
+                process_text += f"• El mensaje no ha sido modificado\n"
+                process_text += f"• La firma proviene del poseedor de la clave privada\n"
+                process_text += f"• Se garantiza autenticidad e integridad"
+            else:
+                process_text += f"• El mensaje pudo haber sido modificado\n"
+                process_text += f"• La firma no coincide con el mensaje\n"
+                process_text += f"• NO se puede garantizar autenticidad"
+        
+        self.signature_process.insert("1.0", process_text)
+        self.signature_process.configure(state="disabled")
+    
+    def show_signature_info(self):
+        """Mostrar información general sobre firma digital"""
+        self.signature_process.configure(state="normal")
+        self.signature_process.delete("1.0", tk.END)
+        
+        info_text = """Firma Digital - Conceptos Fundamentales:
+
+La firma digital es un mecanismo criptográfico que proporciona:
+• Autenticidad: Confirma la identidad del firmante
+• Integridad: Detecta modificaciones en el mensaje
+• No repudio: El firmante no puede negar haber firmado
+
+Proceso de Firmado:
+1. Se calcula el hash del mensaje original
+2. El hash se cifra con la clave privada del firmante
+3. El resultado es la firma digital
+
+Proceso de Verificación:
+1. Se calcula el hash del mensaje recibido
+2. Se descifra la firma con la clave pública
+3. Se comparan ambos hashes
+
+Ventajas:
+• Más eficiente que cifrar todo el mensaje
+• Funciona con mensajes de cualquier tamaño
+• Proporciona prueba criptográfica de autenticidad
+
+Aplicaciones:
+• Documentos legales digitales
+• Transacciones financieras
+• Comunicaciones seguras
+• Autenticación de software"""
+        
+        self.signature_process.insert("1.0", info_text)
+        self.signature_process.configure(state="disabled")
+    
+    def clear_signature_fields(self):
+        """Limpiar campos de firma digital"""
+        self.signature_message.delete("1.0", tk.END)
+        self.signature_hash_algo.set("SHA-256")
+        
+        self.signature_result.configure(state="normal")
+        self.signature_result.delete("1.0", tk.END)
+        self.signature_result.configure(state="disabled")
+        
+        self.signature_verification.configure(state="normal", bg="white")
+        self.signature_verification.delete("1.0", tk.END)
+        self.signature_verification.configure(state="disabled")
+        
+        self.signature_keys_info.configure(state="normal")
+        self.signature_keys_info.delete("1.0", tk.END)
+        self.signature_keys_info.configure(state="disabled")
+        
+        # Limpiar variables
+        self.signature_keys = None
+        self.current_signature = None
+        self.current_message_hash = None
+        
+        # Mostrar información inicial
+        self.show_signature_info()
     
     def show_huffman_screen(self):
-        """Mostrar pantalla de Huffman (implementar después)"""
-        ttb.Label(
+        """Mostrar la pantalla de codificación Huffman"""
+        # Título
+        title = ttb.Label(
             self.content_frame,
-            text="📊 Codificación Huffman - En desarrollo",
+            text="📊 Codificación Huffman",
             font=("Arial", 20, "bold")
-        ).pack(pady=50)
+        )
+        title.grid(row=0, column=0, pady=(0, 20), sticky="w")
+        
+        # Descripción
+        desc = ttb.Label(
+            self.content_frame,
+            text="La codificación Huffman es un algoritmo de compresión sin pérdida que asigna\n"
+                 "códigos más cortos a caracteres más frecuentes.",
+            font=("Arial", 10),
+            justify="left"
+        )
+        desc.grid(row=1, column=0, pady=(0, 20), sticky="w")
+        
+        # Frame principal
+        main_frame = ttb.Frame(self.content_frame)
+        main_frame.grid(row=2, column=0, sticky="nsew")
+        
+        # Configurar grilla
+        main_frame.grid_columnconfigure(0, weight=1)
+        main_frame.grid_columnconfigure(1, weight=1)
+        
+        # Panel de entrada
+        input_frame = ttb.LabelFrame(main_frame, text="Texto Original", padding=10)
+        input_frame.grid(row=0, column=0, padx=(0, 10), pady=(0, 10), sticky="nsew")
+        
+        # Campo de texto
+        ttb.Label(input_frame, text="Texto a comprimir:").pack(anchor="w")
+        self.huffman_text = tk.Text(input_frame, height=8, width=40)
+        self.huffman_text.pack(fill="both", expand=True, pady=(5, 10))
+        
+        # Botones
+        button_frame = ttb.Frame(input_frame)
+        button_frame.pack(fill="x")
+        
+        ttb.Button(
+            button_frame,
+            text="Codificar",
+            bootstyle=SUCCESS,
+            command=self.huffman_encode
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Decodificar",
+            bootstyle=WARNING,
+            command=self.huffman_decode
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Limpiar",
+            bootstyle=SECONDARY,
+            command=self.clear_huffman_fields
+        ).pack(side="left", padx=(0, 5))
+        
+        ttb.Button(
+            button_frame,
+            text="Ejemplo",
+            bootstyle=INFO,
+            command=self.load_huffman_example
+        ).pack(side="left")
+        
+        # Panel de resultado
+        result_frame = ttb.LabelFrame(main_frame, text="Resultado", padding=10)
+        result_frame.grid(row=0, column=1, padx=(10, 0), pady=(0, 10), sticky="nsew")
+        
+        self.huffman_result = tk.Text(result_frame, height=8, width=40, state="disabled")
+        self.huffman_result.pack(fill="both", expand=True)
+        
+        # Panel de estadísticas
+        stats_frame = ttb.LabelFrame(main_frame, text="Estadísticas de Compresión", padding=10)
+        stats_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", pady=(10, 0))
+        
+        # Notebook para organizar la información
+        self.huffman_notebook = ttb.Notebook(stats_frame)
+        self.huffman_notebook.pack(fill="both", expand=True)
+        
+        # Pestaña de frecuencias
+        freq_frame = ttb.Frame(self.huffman_notebook)
+        self.huffman_notebook.add(freq_frame, text="Frecuencias")
+        
+        self.huffman_frequencies = tk.Text(freq_frame, height=10, state="disabled")
+        self.huffman_frequencies.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Pestaña de códigos
+        codes_frame = ttb.Frame(self.huffman_notebook)
+        self.huffman_notebook.add(codes_frame, text="Códigos")
+        
+        self.huffman_codes = tk.Text(codes_frame, height=10, state="disabled")
+        self.huffman_codes.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Pestaña de árbol
+        tree_frame = ttb.Frame(self.huffman_notebook)
+        self.huffman_notebook.add(tree_frame, text="Árbol")
+        
+        self.huffman_tree = tk.Text(tree_frame, height=10, state="disabled", font=("Courier New", 9))
+        self.huffman_tree.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Variables para almacenar datos
+        self.huffman_encoder = None
+        self.last_encoded_data = None
+    
+    def huffman_encode(self):
+        """Codificar texto con Huffman"""
+        try:
+            text = self.huffman_text.get("1.0", tk.END).strip()
+            
+            if not text:
+                self.show_warning("Por favor ingrese un texto para codificar")
+                return
+            
+            if len(text) < 2:
+                self.show_warning("El texto debe tener al menos 2 caracteres")
+                return
+            
+            # Codificar con Huffman
+            encoded_data = self.huffman.encode(text)
+            self.huffman_encoder = self.huffman
+            self.last_encoded_data = encoded_data
+            
+            # Mostrar resultado
+            self.huffman_result.configure(state="normal")
+            self.huffman_result.delete("1.0", tk.END)
+            
+            result_text = f"Texto Codificado (Huffman):\n\n"
+            result_text += f"Código binario:\n{encoded_data['encoded'][:200]}"
+            if len(encoded_data['encoded']) > 200:
+                result_text += f"...\n(Mostrando primeros 200 bits de {len(encoded_data['encoded'])} totales)"
+            result_text += f"\n\nEstadísticas de compresión:\n"
+            result_text += f"• Tamaño original: {encoded_data['original_size']} bits\n"
+            result_text += f"• Tamaño comprimido: {encoded_data['compressed_size']} bits\n"
+            result_text += f"• Ratio de compresión: {encoded_data['compression_ratio']:.2f}%\n"
+            result_text += f"• Ahorro de espacio: {encoded_data['space_saved']:.2f}%"
+            
+            self.huffman_result.insert("1.0", result_text)
+            self.huffman_result.configure(state="disabled")
+            
+            # Mostrar frecuencias
+            self.display_huffman_frequencies(encoded_data['frequencies'])
+            
+            # Mostrar códigos
+            self.display_huffman_codes(encoded_data['codes'])
+            
+            # Mostrar árbol
+            self.display_huffman_tree(encoded_data['tree_visualization'])
+            
+            self.update_status(f"Texto codificado con Huffman - Compresión: {encoded_data['compression_ratio']:.1f}%")
+            
+        except Exception as e:
+            self.show_error(f"Error al codificar con Huffman: {str(e)}")
+    
+    def huffman_decode(self):
+        """Decodificar texto con Huffman"""
+        try:
+            if not self.last_encoded_data:
+                self.show_warning("Primero codifique un texto para poder decodificarlo")
+                return
+            
+            # Decodificar
+            decoded_text = self.huffman.decode(
+                self.last_encoded_data['encoded'], 
+                self.last_encoded_data['codes']
+            )
+            
+            # Mostrar resultado
+            self.huffman_result.configure(state="normal")
+            self.huffman_result.delete("1.0", tk.END)
+            
+            result_text = f"Texto Decodificado:\n\n"
+            result_text += f"{decoded_text}\n\n"
+            result_text += f"Verificación:\n"
+            original_text = self.huffman_text.get("1.0", tk.END).strip()
+            is_correct = decoded_text == original_text
+            result_text += f"• Decodificación {'✅ CORRECTA' if is_correct else '❌ INCORRECTA'}\n"
+            result_text += f"• Longitud original: {len(original_text)} caracteres\n"
+            result_text += f"• Longitud decodificada: {len(decoded_text)} caracteres\n"
+            
+            if is_correct:
+                result_text += f"• ✅ El proceso de compresión es sin pérdidas"
+            else:
+                result_text += f"• ❌ Error en el proceso de decodificación"
+            
+            self.huffman_result.insert("1.0", result_text)
+            self.huffman_result.configure(state="disabled")
+            
+            self.update_status(f"Decodificación {'exitosa' if is_correct else 'fallida'}")
+            
+        except Exception as e:
+            self.show_error(f"Error al decodificar: {str(e)}")
+    
+    def display_huffman_frequencies(self, frequencies):
+        """Mostrar tabla de frecuencias"""
+        self.huffman_frequencies.configure(state="normal")
+        self.huffman_frequencies.delete("1.0", tk.END)
+        
+        freq_text = "Análisis de Frecuencias:\n\n"
+        freq_text += f"{'Carácter':<10} {'Frecuencia':<12} {'Porcentaje':<12}\n"
+        freq_text += "-" * 40 + "\n"
+        
+        total_chars = sum(frequencies.values())
+        sorted_freq = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+        
+        for char, freq in sorted_freq:
+            char_display = repr(char) if char in '\n\r\t ' else char
+            percentage = (freq / total_chars) * 100
+            freq_text += f"{char_display:<10} {freq:<12} {percentage:<12.1f}%\n"
+        
+        freq_text += f"\nTotal de caracteres: {total_chars}\n"
+        freq_text += f"Caracteres únicos: {len(frequencies)}\n"
+        freq_text += f"Carácter más frecuente: '{sorted_freq[0][0]}' ({sorted_freq[0][1]} veces)"
+        
+        self.huffman_frequencies.insert("1.0", freq_text)
+        self.huffman_frequencies.configure(state="disabled")
+    
+    def display_huffman_codes(self, codes):
+        """Mostrar tabla de códigos Huffman"""
+        self.huffman_codes.configure(state="normal")
+        self.huffman_codes.delete("1.0", tk.END)
+        
+        codes_text = "Códigos Huffman Generados:\n\n"
+        codes_text += f"{'Carácter':<10} {'Código':<15} {'Longitud':<10}\n"
+        codes_text += "-" * 40 + "\n"
+        
+        # Ordenar por longitud de código
+        sorted_codes = sorted(codes.items(), key=lambda x: len(x[1]))
+        
+        total_bits = 0
+        for char, code in sorted_codes:
+            char_display = repr(char) if char in '\n\r\t ' else char
+            codes_text += f"{char_display:<10} {code:<15} {len(code):<10}\n"
+            total_bits += len(code)
+        
+        codes_text += f"\nEstadísticas de códigos:\n"
+        codes_text += f"• Código más corto: {min(len(code) for code in codes.values())} bits\n"
+        codes_text += f"• Código más largo: {max(len(code) for code in codes.values())} bits\n"
+        codes_text += f"• Longitud promedio: {total_bits / len(codes):.2f} bits\n"
+        codes_text += f"• Total de códigos: {len(codes)}\n\n"
+        codes_text += "Principio de Huffman:\n"
+        codes_text += "• Caracteres frecuentes → códigos cortos\n"
+        codes_text += "• Caracteres raros → códigos largos\n"
+        codes_text += "• Ningún código es prefijo de otro"
+        
+        self.huffman_codes.insert("1.0", codes_text)
+        self.huffman_codes.configure(state="disabled")
+    
+    def display_huffman_tree(self, tree_visualization):
+        """Mostrar visualización del árbol Huffman"""
+        self.huffman_tree.configure(state="normal")
+        self.huffman_tree.delete("1.0", tk.END)
+        
+        tree_text = "Árbol de Huffman:\n\n"
+        tree_text += tree_visualization
+        tree_text += "\n\nEstructura del árbol:\n"
+        tree_text += "• Nodos hoja: contienen caracteres\n"
+        tree_text += "• Nodos internos: sumas de frecuencias\n"
+        tree_text += "• Camino a la izquierda: bit '0'\n"
+        tree_text += "• Camino a la derecha: bit '1'\n"
+        tree_text += "• El código se forma siguiendo el camino desde la raíz\n\n"
+        tree_text += "Algoritmo de construcción:\n"
+        tree_text += "1. Crear nodos hoja para cada carácter\n"
+        tree_text += "2. Crear cola de prioridad por frecuencia\n"
+        tree_text += "3. Repetir hasta que quede un nodo:\n"
+        tree_text += "   a. Tomar los dos nodos de menor frecuencia\n"
+        tree_text += "   b. Crear nodo padre con suma de frecuencias\n"
+        tree_text += "   c. Agregar el nodo padre a la cola\n"
+        tree_text += "4. El último nodo es la raíz del árbol"
+        
+        self.huffman_tree.insert("1.0", tree_text)
+        self.huffman_tree.configure(state="disabled")
+    
+    def load_huffman_example(self):
+        """Cargar un ejemplo para Huffman"""
+        example_text = "ABRACADABRA! Este es un ejemplo de texto para probar la codificación Huffman. Los caracteres más frecuentes como A, R y espacios deberían tener códigos más cortos."
+        
+        self.huffman_text.delete("1.0", tk.END)
+        self.huffman_text.insert("1.0", example_text)
+        self.update_status("Ejemplo cargado para codificación Huffman")
+    
+    def clear_huffman_fields(self):
+        """Limpiar campos de Huffman"""
+        self.huffman_text.delete("1.0", tk.END)
+        
+        self.huffman_result.configure(state="normal")
+        self.huffman_result.delete("1.0", tk.END)
+        self.huffman_result.configure(state="disabled")
+        
+        self.huffman_frequencies.configure(state="normal")
+        self.huffman_frequencies.delete("1.0", tk.END)
+        self.huffman_frequencies.configure(state="disabled")
+        
+        self.huffman_codes.configure(state="normal")
+        self.huffman_codes.delete("1.0", tk.END)
+        self.huffman_codes.configure(state="disabled")
+        
+        self.huffman_tree.configure(state="normal")
+        self.huffman_tree.delete("1.0", tk.END)
+        self.huffman_tree.configure(state="disabled")
+        
+        # Limpiar variables
+        self.huffman_encoder = None
+        self.last_encoded_data = None
     
     def show_blockchain_screen(self):
-        """Mostrar pantalla de Blockchain (implementar después)"""
-        ttb.Label(
+        """Mostrar pantalla de Blockchain"""
+        # Título
+        title = ttb.Label(
             self.content_frame,
-            text="⛓️ Blockchain - En desarrollo",
+            text="⛓️ Blockchain - Cadena de Bloques",
             font=("Arial", 20, "bold")
-        ).pack(pady=50)
+        )
+        title.pack(pady=(20, 10))
+        
+        # Descripción
+        desc = ttb.Label(
+            self.content_frame,
+            text="Sistema de cadena de bloques para demostrar integridad de datos",
+            font=("Arial", 12)
+        )
+        desc.pack(pady=(0, 20))
+        
+        # Frame principal
+        main_frame = ttb.Frame(self.content_frame)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        
+        # Frame izquierdo - Controles
+        left_frame = ttb.LabelFrame(main_frame, text="Controles", padding=10)
+        left_frame.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10))
+        
+        # Datos para el bloque
+        ttb.Label(left_frame, text="Datos del bloque:").pack(anchor=tk.W)
+        self.blockchain_data_entry = ttb.Entry(left_frame, width=30)
+        self.blockchain_data_entry.pack(pady=(5, 10), fill=tk.X)
+        
+        # Botón para agregar bloque
+        add_block_btn = ttb.Button(
+            left_frame,
+            text="➕ Agregar Bloque",
+            bootstyle=SUCCESS,
+            command=self.add_blockchain_block
+        )
+        add_block_btn.pack(pady=5, fill=tk.X)
+        
+        # Botón para verificar integridad
+        verify_btn = ttb.Button(
+            left_frame,
+            text="🔍 Verificar Integridad",
+            bootstyle=INFO,
+            command=self.verify_blockchain_integrity
+        )
+        verify_btn.pack(pady=5, fill=tk.X)
+        
+        # Botón para simular alteración
+        tamper_btn = ttb.Button(
+            left_frame,
+            text="⚠️ Simular Alteración",
+            bootstyle=WARNING,
+            command=self.tamper_blockchain
+        )
+        tamper_btn.pack(pady=5, fill=tk.X)
+        
+        # Botón para limpiar cadena
+        clear_btn = ttb.Button(
+            left_frame,
+            text="🗑️ Limpiar Cadena",
+            bootstyle=DANGER,
+            command=self.clear_blockchain
+        )
+        clear_btn.pack(pady=5, fill=tk.X)
+        
+        # Información de la cadena
+        info_frame = ttb.LabelFrame(left_frame, text="Información", padding=10)
+        info_frame.pack(pady=(20, 0), fill=tk.X)
+        
+        self.blockchain_info_label = ttb.Label(info_frame, text="Bloques: 0\nÚltimo hash: N/A")
+        self.blockchain_info_label.pack(anchor=tk.W)
+        
+        # Frame derecho - Visualización de la cadena
+        right_frame = ttb.LabelFrame(main_frame, text="Cadena de Bloques", padding=10)
+        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        
+        # Treeview para mostrar la cadena
+        columns = ("Índice", "Datos", "Hash", "Hash Anterior", "Timestamp", "Válido")
+        self.blockchain_tree = ttb.Treeview(right_frame, columns=columns, show="headings", height=15)
+        
+        # Configurar encabezados
+        self.blockchain_tree.heading("Índice", text="Índice")
+        self.blockchain_tree.heading("Datos", text="Datos")
+        self.blockchain_tree.heading("Hash", text="Hash")
+        self.blockchain_tree.heading("Hash Anterior", text="Hash Anterior")
+        self.blockchain_tree.heading("Timestamp", text="Timestamp")
+        self.blockchain_tree.heading("Válido", text="Válido")
+        
+        # Configurar ancho de columnas
+        self.blockchain_tree.column("Índice", width=60)
+        self.blockchain_tree.column("Datos", width=150)
+        self.blockchain_tree.column("Hash", width=200)
+        self.blockchain_tree.column("Hash Anterior", width=200)
+        self.blockchain_tree.column("Timestamp", width=150)
+        self.blockchain_tree.column("Válido", width=60)
+        
+        # Scrollbar para el treeview
+        blockchain_scrollbar = ttb.Scrollbar(right_frame, orient=tk.VERTICAL, command=self.blockchain_tree.yview)
+        self.blockchain_tree.configure(yscrollcommand=blockchain_scrollbar.set)
+        
+        # Empaquetar treeview y scrollbar
+        self.blockchain_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        blockchain_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Resultado de verificación
+        self.blockchain_result = ttb.Text(right_frame, height=4, wrap=tk.WORD)
+        self.blockchain_result.pack(pady=(10, 0), fill=tk.X)
+        
+        # Inicializar blockchain
+        self.blockchain = Blockchain()
+        self.update_blockchain_display()
+        
+        # Agregar bloque génesis si no existe
+        if len(self.blockchain.chain) == 0:
+            self.blockchain.add_block("Bloque Génesis")
+            self.update_blockchain_display()
+    
+    def add_blockchain_block(self):
+        """Agregar un bloque a la cadena"""
+        try:
+            data = self.blockchain_data_entry.get().strip()
+            if not data:
+                self.show_warning("Por favor ingrese datos para el bloque")
+                return
+            
+            # Agregar el bloque
+            self.blockchain.add_block(data)
+            
+            # Actualizar la visualización
+            self.update_blockchain_display()
+            
+            # Limpiar el campo de entrada
+            self.blockchain_data_entry.delete(0, tk.END)
+            
+            self.show_info(f"Bloque agregado exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al agregar bloque: {str(e)}")
+    
+    def verify_blockchain_integrity(self):
+        """Verificar la integridad de la cadena"""
+        try:
+            is_valid = self.blockchain.is_chain_valid()
+            
+            if is_valid:
+                result = "✅ La cadena de bloques es válida e íntegra"
+                self.blockchain_result.configure(state="normal")
+                self.blockchain_result.delete(1.0, tk.END)
+                self.blockchain_result.insert(tk.END, result)
+                self.blockchain_result.configure(state="disabled")
+                self.show_info("Cadena válida")
+            else:
+                result = "❌ La cadena de bloques ha sido alterada o es inválida"
+                self.blockchain_result.configure(state="normal")
+                self.blockchain_result.delete(1.0, tk.END)
+                self.blockchain_result.insert(tk.END, result)
+                self.blockchain_result.configure(state="disabled")
+                self.show_warning("Cadena inválida")
+            
+            # Actualizar la visualización con el estado de validez
+            self.update_blockchain_display()
+            
+        except Exception as e:
+            self.show_error(f"Error al verificar integridad: {str(e)}")
+    
+    def tamper_blockchain(self):
+        """Simular alteración de un bloque"""
+        try:
+            if len(self.blockchain.chain) < 2:
+                self.show_warning("Necesita al menos 2 bloques para simular alteración")
+                return
+            
+            # Alterar el segundo bloque (índice 1)
+            self.blockchain.chain[1].data = "DATOS ALTERADOS"
+            
+            # Actualizar la visualización
+            self.update_blockchain_display()
+            
+            self.show_info("Simulación de alteración realizada en el bloque índice 1")
+            
+        except Exception as e:
+            self.show_error(f"Error al simular alteración: {str(e)}")
+    
+    def clear_blockchain(self):
+        """Limpiar la cadena de bloques"""
+        try:
+            self.blockchain = Blockchain()
+            self.update_blockchain_display()
+            
+            # Limpiar resultado
+            self.blockchain_result.configure(state="normal")
+            self.blockchain_result.delete(1.0, tk.END)
+            self.blockchain_result.configure(state="disabled")
+            
+            self.show_info("Cadena de bloques limpiada")
+            
+        except Exception as e:
+            self.show_error(f"Error al limpiar cadena: {str(e)}")
+    
+    def update_blockchain_display(self):
+        """Actualizar la visualización de la cadena"""
+        try:
+            # Limpiar el treeview
+            for item in self.blockchain_tree.get_children():
+                self.blockchain_tree.delete(item)
+            
+            # Agregar cada bloque
+            for block in self.blockchain.chain:
+                # Verificar si el bloque es válido
+                is_valid = "✅" if self.blockchain.is_block_valid(block) else "❌"
+                
+                # Truncar datos y hashes para visualización
+                data_display = block.data[:30] + "..." if len(block.data) > 30 else block.data
+                hash_display = block.hash[:20] + "..." if len(block.hash) > 20 else block.hash
+                prev_hash_display = block.previous_hash[:20] + "..." if len(block.previous_hash) > 20 else block.previous_hash
+                
+                # Formatear timestamp
+                from datetime import datetime
+                timestamp_display = datetime.fromtimestamp(block.timestamp).strftime("%Y-%m-%d %H:%M:%S")
+                
+                self.blockchain_tree.insert("", "end", values=(
+                    block.index,
+                    data_display,
+                    hash_display,
+                    prev_hash_display,
+                    timestamp_display,
+                    is_valid
+                ))
+            
+            # Actualizar información
+            last_hash = self.blockchain.chain[-1].hash[:20] + "..." if self.blockchain.chain else "N/A"
+            info_text = f"Bloques: {len(self.blockchain.chain)}\nÚltimo hash: {last_hash}"
+            self.blockchain_info_label.configure(text=info_text)
+            
+        except Exception as e:
+            self.show_error(f"Error al actualizar visualización: {str(e)}")
     
     def show_integrity_screen(self):
-        """Mostrar pantalla de Integridad (implementar después)"""
-        ttb.Label(
+        """Mostrar pantalla de Verificador de Integridad"""
+        # Título
+        title = ttb.Label(
             self.content_frame,
-            text="🔎 Verificador de Integridad - En desarrollo",
+            text="🔎 Verificador de Integridad",
             font=("Arial", 20, "bold")
-        ).pack(pady=50)
+        )
+        title.pack(pady=(20, 10))
+        
+        # Descripción
+        desc = ttb.Label(
+            self.content_frame,
+            text="Verificar la integridad de archivos mediante funciones hash",
+            font=("Arial", 12)
+        )
+        desc.pack(pady=(0, 20))
+        
+        # Frame principal
+        main_frame = ttb.Frame(self.content_frame)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        
+        # Frame de controles
+        controls_frame = ttb.LabelFrame(main_frame, text="Controles", padding=10)
+        controls_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Frame para selección de archivo
+        file_frame = ttb.Frame(controls_frame)
+        file_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttb.Label(file_frame, text="Archivo a verificar:").pack(anchor=tk.W)
+        file_input_frame = ttb.Frame(file_frame)
+        file_input_frame.pack(fill=tk.X, pady=(5, 0))
+        
+        self.integrity_file_entry = ttb.Entry(file_input_frame, width=50)
+        self.integrity_file_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        browse_btn = ttb.Button(
+            file_input_frame,
+            text="📁 Examinar",
+            bootstyle=INFO,
+            command=self.browse_integrity_file
+        )
+        browse_btn.pack(side=tk.RIGHT, padx=(5, 0))
+        
+        # Selección de algoritmo hash
+        hash_frame = ttb.Frame(controls_frame)
+        hash_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttb.Label(hash_frame, text="Algoritmo hash:").pack(anchor=tk.W)
+        self.integrity_hash_var = tk.StringVar(value="sha256")
+        hash_combo = ttb.Combobox(
+            hash_frame,
+            textvariable=self.integrity_hash_var,
+            values=["md5", "sha1", "sha256", "sha512"],
+            state="readonly",
+            width=20
+        )
+        hash_combo.pack(anchor=tk.W, pady=(5, 0))
+        
+        # Botones de acción
+        buttons_frame = ttb.Frame(controls_frame)
+        buttons_frame.pack(fill=tk.X, pady=(10, 0))
+        
+        generate_btn = ttb.Button(
+            buttons_frame,
+            text="🔐 Generar Hash",
+            bootstyle=SUCCESS,
+            command=self.generate_file_hash
+        )
+        generate_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        compare_btn = ttb.Button(
+            buttons_frame,
+            text="🔍 Comparar Hash",
+            bootstyle=INFO,
+            command=self.compare_file_hash
+        )
+        compare_btn.pack(side=tk.LEFT, padx=5)
+        
+        verify_btn = ttb.Button(
+            buttons_frame,
+            text="✅ Verificar Integridad",
+            bootstyle=WARNING,
+            command=self.verify_file_integrity
+        )
+        verify_btn.pack(side=tk.LEFT, padx=5)
+        
+        clear_btn = ttb.Button(
+            buttons_frame,
+            text="🗑️ Limpiar",
+            bootstyle=DANGER,
+            command=self.clear_integrity_results
+        )
+        clear_btn.pack(side=tk.LEFT, padx=5)
+        
+        # Frame de resultados
+        results_frame = ttb.LabelFrame(main_frame, text="Resultados", padding=10)
+        results_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Información del archivo
+        info_frame = ttb.Frame(results_frame)
+        info_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttb.Label(info_frame, text="Información del archivo:").pack(anchor=tk.W)
+        self.integrity_info_text = ttb.Text(info_frame, height=3, wrap=tk.WORD)
+        self.integrity_info_text.pack(fill=tk.X, pady=(5, 0))
+        
+        # Hash actual
+        hash_frame = ttb.Frame(results_frame)
+        hash_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttb.Label(hash_frame, text="Hash actual:").pack(anchor=tk.W)
+        self.integrity_hash_text = ttb.Text(hash_frame, height=2, wrap=tk.WORD)
+        self.integrity_hash_text.pack(fill=tk.X, pady=(5, 0))
+        
+        # Hash de comparación
+        compare_frame = ttb.Frame(results_frame)
+        compare_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        ttb.Label(compare_frame, text="Hash de comparación:").pack(anchor=tk.W)
+        self.integrity_compare_entry = ttb.Entry(compare_frame, width=80)
+        self.integrity_compare_entry.pack(fill=tk.X, pady=(5, 0))
+        
+        # Resultado de verificación
+        result_frame = ttb.Frame(results_frame)
+        result_frame.pack(fill=tk.X)
+        
+        ttb.Label(result_frame, text="Resultado de verificación:").pack(anchor=tk.W)
+        self.integrity_result_text = ttb.Text(result_frame, height=6, wrap=tk.WORD)
+        self.integrity_result_text.pack(fill=tk.X, pady=(5, 0))
+        
+        # Inicializar verificador
+        self.integrity_verifier = IntegrityVerifier()
+        self.current_file_path = None
+        self.current_file_hash = None
+    
+    def browse_integrity_file(self):
+        """Examinar archivo para verificar integridad"""
+        try:
+            file_path = filedialog.askopenfilename(
+                title="Seleccionar archivo para verificar",
+                filetypes=[("Todos los archivos", "*.*")]
+            )
+            
+            if file_path:
+                self.integrity_file_entry.delete(0, tk.END)
+                self.integrity_file_entry.insert(0, file_path)
+                self.current_file_path = file_path
+                self.show_file_info()
+                
+        except Exception as e:
+            self.show_error(f"Error al seleccionar archivo: {str(e)}")
+    
+    def show_file_info(self):
+        """Mostrar información del archivo seleccionado"""
+        try:
+            if not self.current_file_path:
+                return
+            
+            import os
+            file_size = os.path.getsize(self.current_file_path)
+            file_name = os.path.basename(self.current_file_path)
+            
+            # Formatear tamaño
+            if file_size < 1024:
+                size_str = f"{file_size} bytes"
+            elif file_size < 1024 * 1024:
+                size_str = f"{file_size / 1024:.2f} KB"
+            else:
+                size_str = f"{file_size / (1024 * 1024):.2f} MB"
+            
+            info_text = f"Nombre: {file_name}\nTamaño: {size_str}\nRuta: {self.current_file_path}"
+            
+            self.integrity_info_text.configure(state="normal")
+            self.integrity_info_text.delete(1.0, tk.END)
+            self.integrity_info_text.insert(tk.END, info_text)
+            self.integrity_info_text.configure(state="disabled")
+            
+        except Exception as e:
+            self.show_error(f"Error al mostrar información del archivo: {str(e)}")
+    
+    def generate_file_hash(self):
+        """Generar hash del archivo seleccionado"""
+        try:
+            if not self.current_file_path:
+                self.show_warning("Por favor seleccione un archivo")
+                return
+            
+            if not os.path.exists(self.current_file_path):
+                self.show_error("El archivo seleccionado no existe")
+                return
+            
+            # Obtener algoritmo seleccionado
+            algorithm = self.integrity_hash_var.get()
+            
+            # Generar hash
+            file_hash = self.integrity_verifier.calculate_file_hash(self.current_file_path, algorithm)
+            self.current_file_hash = file_hash
+            
+            # Mostrar hash
+            self.integrity_hash_text.configure(state="normal")
+            self.integrity_hash_text.delete(1.0, tk.END)
+            self.integrity_hash_text.insert(tk.END, f"{algorithm.upper()}: {file_hash}")
+            self.integrity_hash_text.configure(state="disabled")
+            
+            self.show_info(f"Hash {algorithm.upper()} generado exitosamente")
+            
+        except Exception as e:
+            self.show_error(f"Error al generar hash: {str(e)}")
+    
+    def compare_file_hash(self):
+        """Comparar hash actual con hash de referencia"""
+        try:
+            if not self.current_file_hash:
+                self.show_warning("Primero genere el hash del archivo")
+                return
+            
+            reference_hash = self.integrity_compare_entry.get().strip()
+            if not reference_hash:
+                self.show_warning("Por favor ingrese el hash de referencia")
+                return
+            
+            # Comparar hashes
+            is_match = self.current_file_hash.lower() == reference_hash.lower()
+            
+            if is_match:
+                result = "✅ COINCIDENCIA: Los hashes son idénticos\n"
+                result += "El archivo no ha sido modificado"
+                status = "success"
+            else:
+                result = "❌ NO COINCIDEN: Los hashes son diferentes\n"
+                result += "El archivo ha sido modificado o el hash de referencia es incorrecto"
+                status = "error"
+            
+            self.integrity_result_text.configure(state="normal")
+            self.integrity_result_text.delete(1.0, tk.END)
+            self.integrity_result_text.insert(tk.END, result)
+            self.integrity_result_text.configure(state="disabled")
+            
+            if status == "success":
+                self.show_info("Archivo íntegro")
+            else:
+                self.show_warning("Archivo modificado")
+                
+        except Exception as e:
+            self.show_error(f"Error al comparar hashes: {str(e)}")
+    
+    def verify_file_integrity(self):
+        """Verificar integridad completa del archivo"""
+        try:
+            if not self.current_file_path:
+                self.show_warning("Por favor seleccione un archivo")
+                return
+            
+            if not os.path.exists(self.current_file_path):
+                self.show_error("El archivo seleccionado no existe")
+                return
+            
+            # Verificar con múltiples algoritmos
+            algorithms = ["md5", "sha1", "sha256", "sha512"]
+            results = []
+            
+            for algorithm in algorithms:
+                try:
+                    file_hash = self.integrity_verifier.calculate_file_hash(self.current_file_path, algorithm)
+                    results.append(f"{algorithm.upper()}: {file_hash}")
+                except Exception as e:
+                    results.append(f"{algorithm.upper()}: Error - {str(e)}")
+            
+            # Mostrar resultados
+            result_text = "📊 VERIFICACIÓN COMPLETA DE INTEGRIDAD\n"
+            result_text += "=" * 50 + "\n"
+            result_text += f"Archivo: {os.path.basename(self.current_file_path)}\n"
+            result_text += f"Fecha: {self.get_current_timestamp()}\n\n"
+            result_text += "Hashes calculados:\n"
+            result_text += "-" * 30 + "\n"
+            result_text += "\n".join(results)
+            
+            self.integrity_result_text.configure(state="normal")
+            self.integrity_result_text.delete(1.0, tk.END)
+            self.integrity_result_text.insert(tk.END, result_text)
+            self.integrity_result_text.configure(state="disabled")
+            
+            self.show_info("Verificación de integridad completada")
+            
+        except Exception as e:
+            self.show_error(f"Error en verificación de integridad: {str(e)}")
+    
+    def clear_integrity_results(self):
+        """Limpiar todos los resultados"""
+        try:
+            self.integrity_file_entry.delete(0, tk.END)
+            self.integrity_compare_entry.delete(0, tk.END)
+            
+            self.integrity_info_text.configure(state="normal")
+            self.integrity_info_text.delete(1.0, tk.END)
+            self.integrity_info_text.configure(state="disabled")
+            
+            self.integrity_hash_text.configure(state="normal")
+            self.integrity_hash_text.delete(1.0, tk.END)
+            self.integrity_hash_text.configure(state="disabled")
+            
+            self.integrity_result_text.configure(state="normal")
+            self.integrity_result_text.delete(1.0, tk.END)
+            self.integrity_result_text.configure(state="disabled")
+            
+            self.current_file_path = None
+            self.current_file_hash = None
+            
+            self.show_info("Resultados limpiados")
+            
+        except Exception as e:
+            self.show_error(f"Error al limpiar resultados: {str(e)}")
+    
+    def get_current_timestamp(self):
+        """Obtener timestamp actual"""
+        from datetime import datetime
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     def show_config_screen(self):
         """Mostrar pantalla de configuración"""

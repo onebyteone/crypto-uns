@@ -63,3 +63,168 @@
 2025-07-06 12:46:56,775 - CryptoUNS - INFO - Iniciando CryptoUNS...
 2025-07-06 12:46:56,777 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
 2025-07-06 12:47:12,390 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:03:11,169 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:03:11,169 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:03:11,170 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:03:34,288 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:13:36,843 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:13:36,852 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:13:36,853 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:13:37,090 - CryptoUNS - ERROR - Error en la aplicación: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:13:37,091 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:13:37,092 - CryptoUNS - ERROR - Excepción no capturada
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\main.py", line 344, in <module>
+    main()
+  File "C:\VSCode\Python\crypto-uns\main.py", line 310, in main
+    app = CryptoUNSApp()
+          ^^^^^^^^^^^^^^
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 33, in __init__
+    self.setup_main_window()
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 64, in setup_main_window
+    self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+                                           ^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:16:19,208 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:16:19,208 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:16:19,209 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:16:19,363 - CryptoUNS - ERROR - Error en la aplicación: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:16:19,363 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:16:19,364 - CryptoUNS - ERROR - Excepción no capturada
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\main.py", line 344, in <module>
+    main()
+  File "C:\VSCode\Python\crypto-uns\main.py", line 310, in main
+    app = CryptoUNSApp()
+          ^^^^^^^^^^^^^^
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 33, in __init__
+    self.setup_main_window()
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 64, in setup_main_window
+    self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+                                           ^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:21:26,343 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:21:26,343 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:21:26,344 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:21:27,898 - CryptoUNS - ERROR - Error en la aplicación: 'CryptoUNSApp' object has no attribute 'show_error'
+2025-07-06 13:21:27,898 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:21:27,899 - CryptoUNS - ERROR - Excepción no capturada
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 188, in init_crypto_classes
+    self.update_status("Algoritmos criptográficos inicializados correctamente")
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'update_status'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\main.py", line 344, in <module>
+    main()
+  File "C:\VSCode\Python\crypto-uns\main.py", line 310, in main
+    app = CryptoUNSApp()
+          ^^^^^^^^^^^^^^
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 39, in __init__
+    self.init_crypto_classes()
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 190, in init_crypto_classes
+    self.show_error(f"Error inicializando algoritmos: {str(e)}")
+    ^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'show_error'
+2025-07-06 13:27:53,836 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:27:53,836 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:27:53,837 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:27:54,014 - CryptoUNS - ERROR - Error en la aplicación: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:27:54,015 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:27:54,016 - CryptoUNS - ERROR - Excepción no capturada
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\main.py", line 344, in <module>
+    main()
+  File "C:\VSCode\Python\crypto-uns\main.py", line 310, in main
+    app = CryptoUNSApp()
+          ^^^^^^^^^^^^^^
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 33, in __init__
+    self.setup_main_window()
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 64, in setup_main_window
+    self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+                                           ^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'on_closing'
+2025-07-06 13:29:47,247 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:29:47,248 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:29:47,248 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:29:48,608 - CryptoUNS - ERROR - Error en la aplicación: 'CryptoUNSApp' object has no attribute 'show_error'
+2025-07-06 13:29:48,609 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:29:48,609 - CryptoUNS - ERROR - Excepción no capturada
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 188, in init_crypto_classes
+    self.update_status("Algoritmos criptográficos inicializados correctamente")
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'update_status'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\VSCode\Python\crypto-uns\main.py", line 344, in <module>
+    main()
+  File "C:\VSCode\Python\crypto-uns\main.py", line 310, in main
+    app = CryptoUNSApp()
+          ^^^^^^^^^^^^^^
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 39, in __init__
+    self.init_crypto_classes()
+  File "C:\VSCode\Python\crypto-uns\src\gui\main_window.py", line 190, in init_crypto_classes
+    self.show_error(f"Error inicializando algoritmos: {str(e)}")
+    ^^^^^^^^^^^^^^^
+AttributeError: 'CryptoUNSApp' object has no attribute 'show_error'
+2025-07-06 13:43:32,986 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:43:32,986 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:43:32,986 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:44:07,127 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 13:53:46,971 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:53:46,971 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:53:46,971 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:56:40,273 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 13:56:40,274 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 13:56:40,274 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 13:56:52,539 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:00:04,445 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:00:04,446 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:00:04,446 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:00:47,653 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:00:52,082 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:00:52,082 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:00:52,083 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:01:12,456 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:04:32,731 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:04:32,731 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:04:32,733 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:04:59,347 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:11:04,907 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:11:04,907 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:11:04,909 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:11:14,267 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:14:41,597 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:14:41,597 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:14:41,598 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:15:18,515 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:18:06,605 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:18:06,606 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:18:06,608 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:21:01,374 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:25:38,975 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:25:38,975 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:25:38,976 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:25:54,687 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:28:54,939 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:28:54,940 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:28:54,942 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:32:25,688 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:35:41,456 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:35:41,457 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:35:41,457 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:36:08,792 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:37:43,534 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:37:43,535 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:37:43,536 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:38:51,190 - CryptoUNS - INFO - Aplicación terminada
+2025-07-06 14:41:45,424 - CryptoUNS - INFO - Sistema de logging inicializado
+2025-07-06 14:41:45,425 - CryptoUNS - INFO - Iniciando CryptoUNS...
+2025-07-06 14:41:45,426 - CryptoUNS - INFO - Iniciando interfaz gráfica principal...
+2025-07-06 14:42:13,142 - CryptoUNS - INFO - Aplicación terminada

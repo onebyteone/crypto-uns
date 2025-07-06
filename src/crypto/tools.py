@@ -408,6 +408,27 @@ class Blockchain:
         else:
             raise ValidationError("El bloque no es válido")
     
+    def is_block_valid(self, block: Block) -> bool:
+        """
+        Validar un bloque individual
+        
+        Args:
+            block (Block): Bloque a validar
+            
+        Returns:
+            bool: True si el bloque es válido
+        """
+        # Verificar que el hash del bloque sea correcto
+        if block.hash != block.calculate_hash():
+            return False
+        
+        # Verificar prueba de trabajo (si aplica)
+        if hasattr(self, 'difficulty') and self.difficulty > 0:
+            if not block.hash.startswith("0" * self.difficulty):
+                return False
+        
+        return True
+    
     def is_valid_new_block(self, new_block: Block, previous_block: Block) -> bool:
         """
         Validar nuevo bloque
