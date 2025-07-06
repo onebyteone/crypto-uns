@@ -126,6 +126,7 @@ crypto-uns/
 - **Errores de Grid:** Corrección automática de 9 líneas con parámetros incorrectos de grid()
 - **Errores de GUI:** Corrección de métodos faltantes en Playfair, RSA y Blockchain
 - **Verificación del sistema:** Script de verificación completo implementado
+- **Contraste en Firma Digital:** Mejora de accesibilidad en el área "Estado de verificación"
 
 ### 📊 **Verificación Final:**
 - **Criptografía Clásica:** ✅ Funcionando correctamente

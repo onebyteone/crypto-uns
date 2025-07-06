@@ -825,9 +825,17 @@ class KasiskiAnalysis:
             # Filtrar secuencias que aparecen más de una vez
             for sequence, positions in sequences.items():
                 if len(positions) > 1:
+                    # Calcular distancias para esta secuencia específica
+                    sequence_distances = []
+                    for i in range(len(positions)):
+                        for j in range(i + 1, len(positions)):
+                            distance = positions[j] - positions[i]
+                            sequence_distances.append(distance)
+                    
                     repetitions.append({
                         'sequence': sequence,
                         'positions': positions,
+                        'distances': sorted(sequence_distances),
                         'length': length,
                         'occurrences': len(positions)
                     })
@@ -944,12 +952,13 @@ class KasiskiAnalysis:
         
         return []
     
-    def analyze(self, ciphertext: str) -> Dict:
+    def analyze(self, ciphertext: str, min_length: int = 3) -> Dict:
         """
         Realizar análisis completo de Kasiski
         
         Args:
             ciphertext (str): Texto cifrado a analizar
+            min_length (int): Longitud mínima del patrón a buscar
             
         Returns:
             Dict: Diccionario con resultados del análisis
@@ -961,7 +970,7 @@ class KasiskiAnalysis:
         clean_text = ciphertext.upper().replace(" ", "")
         
         # Encontrar repeticiones
-        repetitions = self.find_repetitions(clean_text)
+        repetitions = self.find_repetitions(clean_text, min_length)
         
         # Calcular distancias
         distances = self.calculate_distances(repetitions)

@@ -698,7 +698,7 @@ class CryptoUNSApp:
         if 'repetitions' in analysis:
             analysis_text += "Repeticiones encontradas:\n"
             for rep in analysis['repetitions'][:5]:  # Mostrar solo las primeras 5
-                analysis_text += f"'{rep['pattern']}' - Distancias: {rep['distances']}\n"
+                analysis_text += f"'{rep['sequence']}' - Distancias: {rep['distances']}\n"
             analysis_text += "\n"
         
         if 'estimated_key_length' in analysis:
@@ -1087,7 +1087,9 @@ class CryptoUNSApp:
         # Factores más comunes
         if 'factors' in analysis:
             results_text += "📊 Factores más comunes:\n"
-            for factor, count in analysis['factors'].most_common(10):
+            # Convertir diccionario a lista ordenada por frecuencia
+            factors_list = sorted(analysis['factors'].items(), key=lambda x: x[1], reverse=True)
+            for factor, count in factors_list[:10]:
                 results_text += f"  {factor}: {count} veces\n"
             results_text += "\n"
         
@@ -1100,7 +1102,7 @@ class CryptoUNSApp:
             if total_patterns > 0:
                 # Patrón más frecuente
                 most_frequent = max(analysis['repetitions'], key=lambda x: len(x['positions']))
-                results_text += f"  Patrón más frecuente: '{most_frequent['pattern']}' ({len(most_frequent['positions'])} veces)\n"
+                results_text += f"  Patrón más frecuente: '{most_frequent['sequence']}' ({len(most_frequent['positions'])} veces)\n"
                 
                 # Distancias más comunes
                 all_distances = []
@@ -1148,7 +1150,7 @@ class CryptoUNSApp:
         
         # Agregar patrones al Treeview
         for pattern_data in sorted_patterns[:50]:  # Mostrar solo los primeros 50
-            pattern = pattern_data['pattern']
+            pattern = pattern_data['sequence']
             frequency = len(pattern_data['positions'])
             positions = ', '.join(map(str, pattern_data['positions'][:10]))  # Primeras 10 posiciones
             if len(pattern_data['positions']) > 10:
@@ -1308,9 +1310,10 @@ class CryptoUNSApp:
         self.rsa_info = tk.Text(info_frame, height=8, state="disabled")
         self.rsa_info.pack(fill="both", expand=True, padx=5, pady=5)
         
-        # Variables para almacenar las claves
+        # Variables para almacenar las claves y datos cifrados
         self.current_public_key = None
         self.current_private_key = None
+        self.current_encrypted_data = None  # Para almacenar la lista de bloques cifrados
         
         # Generar claves iniciales
         self.generate_rsa_keys()
@@ -1387,6 +1390,7 @@ class CryptoUNSApp:
             
             # Cifrar mensaje
             encrypted = self.rsa.encrypt(message, self.current_public_key)
+            self.current_encrypted_data = encrypted  # Almacenar la lista completa
             
             # Mostrar resultado
             self.rsa_result.configure(state="normal")
@@ -1394,14 +1398,23 @@ class CryptoUNSApp:
             
             result_text = f"Mensaje Cifrado:\n\n"
             result_text += f"Texto original: {message}\n\n"
-            result_text += f"Texto cifrado (números):\n"
-            result_text += f"{encrypted}\n\n"
-            result_text += f"Longitud: {len(str(encrypted))} dígitos\n\n"
+            result_text += f"Texto cifrado (bloques):\n"
+            if len(encrypted) == 1:
+                result_text += f"[{encrypted[0]}]\n\n"
+            else:
+                result_text += f"Bloques: {len(encrypted)}\n"
+                for i, block in enumerate(encrypted):
+                    result_text += f"Bloque {i+1}: {block}\n"
+                result_text += "\n"
+            
+            total_digits = sum(len(str(block)) for block in encrypted)
+            result_text += f"Total de dígitos: {total_digits}\n\n"
             result_text += f"Proceso:\n"
-            result_text += f"• Texto convertido a números\n"
-            result_text += f"• Aplicado: c = m^e mod n\n"
-            result_text += f"• e = {self.current_public_key['e']}\n"
-            result_text += f"• n = {self.current_public_key['n']}"
+            result_text += f"• Texto convertido a bloques\n"
+            result_text += f"• Aplicado: c = m^e mod n para cada bloque\n"
+            result_text += f"• e = {self.current_public_key[0]}\n"
+            result_text += f"• n = {self.current_public_key[1]}\n\n"
+            result_text += f"💡 Usa el botón 'Descifrar' para recuperar el texto original"
             
             self.rsa_result.insert("1.0", result_text)
             self.rsa_result.configure(state="disabled")
@@ -1414,10 +1427,8 @@ class CryptoUNSApp:
     def rsa_decrypt(self):
         """Descifrar mensaje con RSA"""
         try:
-            # Obtener el resultado cifrado actual
-            current_result = self.rsa_result.get("1.0", tk.END).strip()
-            
-            if not current_result or "Texto cifrado (números):" not in current_result:
+            # Verificar que hay datos cifrados
+            if not self.current_encrypted_data:
                 self.show_warning("Primero cifre un mensaje para poder descifrarlo")
                 return
             
@@ -1425,36 +1436,29 @@ class CryptoUNSApp:
                 self.show_warning("Por favor genere las claves RSA primero")
                 return
             
-            # Extraer el número cifrado del resultado
-            lines = current_result.split('\n')
-            encrypted_number = None
-            for i, line in enumerate(lines):
-                if "Texto cifrado (números):" in line and i + 1 < len(lines):
-                    try:
-                        encrypted_number = int(lines[i + 1].strip())
-                        break
-                    except ValueError:
-                        continue
-            
-            if encrypted_number is None:
-                self.show_warning("No se encontró un mensaje cifrado válido")
-                return
-            
-            # Descifrar mensaje
-            decrypted = self.rsa.decrypt(encrypted_number, self.current_private_key)
+            # Descifrar mensaje usando la lista almacenada
+            decrypted = self.rsa.decrypt(self.current_encrypted_data, self.current_private_key)
             
             # Mostrar resultado
             self.rsa_result.configure(state="normal")
             self.rsa_result.delete("1.0", tk.END)
             
             result_text = f"Mensaje Descifrado:\n\n"
-            result_text += f"Número cifrado: {encrypted_number}\n\n"
-            result_text += f"Texto descifrado: {decrypted}\n\n"
+            result_text += f"Bloques cifrados: {len(self.current_encrypted_data)}\n"
+            if len(self.current_encrypted_data) <= 3:
+                for i, block in enumerate(self.current_encrypted_data):
+                    result_text += f"Bloque {i+1}: {block}\n"
+            else:
+                result_text += f"Primer bloque: {self.current_encrypted_data[0]}\n"
+                result_text += f"... ({len(self.current_encrypted_data)-2} bloques más) ...\n"
+                result_text += f"Último bloque: {self.current_encrypted_data[-1]}\n"
+            
+            result_text += f"\nTexto descifrado: {decrypted}\n\n"
             result_text += f"Proceso:\n"
-            result_text += f"• Aplicado: m = c^d mod n\n"
-            result_text += f"• d = {self.current_private_key['d']}\n"
-            result_text += f"• n = {self.current_private_key['n']}\n"
-            result_text += f"• Números convertidos a texto\n\n"
+            result_text += f"• Aplicado: m = c^d mod n para cada bloque\n"
+            result_text += f"• d = {self.current_private_key[0]}\n"
+            result_text += f"• n = {self.current_private_key[1]}\n"
+            result_text += f"• Bloques convertidos a texto\n\n"
             result_text += f"Verificación:\n"
             result_text += f"• El texto descifrado coincide con el original\n"
             result_text += f"• La criptografía asimétrica funciona correctamente"
@@ -1487,9 +1491,10 @@ class CryptoUNSApp:
         self.rsa_info.delete("1.0", tk.END)
         self.rsa_info.configure(state="disabled")
         
-        # Limpiar claves almacenadas
+        # Limpiar claves y datos almacenados
         self.current_public_key = None
         self.current_private_key = None
+        self.current_encrypted_data = None
     
     def show_hash_screen(self):
         """Mostrar la pantalla de funciones Hash"""
@@ -2157,8 +2162,14 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
         try:
             self.update_status("Generando claves RSA para firma digital...")
             
-            # Generar claves RSA
-            self.signature_keys = self.signature.generate_keys(1024)  # 1024 bits para rapidez
+            # Generar claves RSA (devuelve tuplas)
+            public_key, private_key = self.signature.generate_keys(1024)  # 1024 bits para rapidez
+            
+            # Almacenar claves como tuplas
+            self.signature_keys = {
+                'public_key': public_key,
+                'private_key': private_key
+            }
             
             # Mostrar información de claves
             self.signature_keys_info.configure(state="normal")
@@ -2166,15 +2177,14 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
             
             keys_text = f"Claves RSA para Firma Digital:\n\n"
             keys_text += f"Clave Pública (para verificación):\n"
-            keys_text += f"n = {self.signature_keys['public_key']['n']}\n"
-            keys_text += f"e = {self.signature_keys['public_key']['e']}\n\n"
+            keys_text += f"e = {public_key[0]}\n"
+            keys_text += f"n = {public_key[1]}\n\n"
             keys_text += f"Clave Privada (para firmado):\n"
-            keys_text += f"n = {self.signature_keys['private_key']['n']}\n"
-            keys_text += f"d = {self.signature_keys['private_key']['d']}\n\n"
-            keys_text += f"Información adicional:\n"
-            keys_text += f"p = {self.signature_keys['p']}\n"
-            keys_text += f"q = {self.signature_keys['q']}\n"
-            keys_text += f"φ(n) = {self.signature_keys['phi_n']}\n\n"
+            keys_text += f"d = {private_key[0]}\n"
+            keys_text += f"n = {private_key[1]}\n\n"
+            keys_text += f"Información:\n"
+            keys_text += f"• Tamaño de clave: 1024 bits\n"
+            keys_text += f"• Longitud de n: {len(str(public_key[1]))} dígitos\n\n"
             keys_text += f"Uso:\n"
             keys_text += f"• Clave privada: Firmar documentos (mantener secreta)\n"
             keys_text += f"• Clave pública: Verificar firmas (compartir libremente)"
@@ -2201,14 +2211,14 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
                 self.show_warning("Por favor genere las claves RSA primero")
                 return
             
-            # Firmar mensaje
-            if hash_algo == "SHA-256":
-                signature_data = self.signature.sign(message, self.signature_keys)
-            else:  # Hash-256
-                signature_data = self.signature.sign_with_custom_hash(message, self.signature_keys)
+            # Firmar mensaje usando el método correcto
+            signature = self.signature.sign_message(message, self.signature_keys['private_key'])
             
-            self.current_signature = signature_data['signature']
-            self.current_message_hash = signature_data['message_hash']
+            # Generar hash del mensaje para mostrar
+            message_hash = self.signature.hash_func.sha256_wrapper(message)
+            
+            self.current_signature = signature
+            self.current_message_hash = message_hash
             
             # Mostrar firma
             self.signature_result.configure(state="normal")
@@ -2217,6 +2227,11 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
             self.signature_result.configure(state="disabled")
             
             # Mostrar proceso
+            signature_data = {
+                'signature': signature,
+                'message_hash': message_hash,
+                'message': message
+            }
             self.display_signature_process("Firmado", message, hash_algo, signature_data)
             
             # Limpiar verificación anterior
@@ -2248,11 +2263,8 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
                 self.show_warning("Por favor firme el mensaje primero")
                 return
             
-            # Verificar firma
-            if hash_algo == "SHA-256":
-                is_valid = self.signature.verify(message, self.current_signature, self.signature_keys['public_key'])
-            else:  # Hash-256
-                is_valid = self.signature.verify_with_custom_hash(message, self.current_signature, self.signature_keys['public_key'])
+            # Verificar firma usando el método correcto
+            is_valid = self.signature.verify_signature(message, self.current_signature, self.signature_keys['public_key'])
             
             # Mostrar resultado de verificación
             self.signature_verification.configure(state="normal")
@@ -2260,10 +2272,10 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
             
             if is_valid:
                 verification_text = "✅ FIRMA VÁLIDA\nEl mensaje es auténtico y no ha sido modificado."
-                self.signature_verification.configure(bg="#d4edda")
+                self.signature_verification.configure(bg="#d4edda", fg="#155724")
             else:
                 verification_text = "❌ FIRMA INVÁLIDA\nEl mensaje ha sido modificado o la firma es incorrecta."
-                self.signature_verification.configure(bg="#f8d7da")
+                self.signature_verification.configure(bg="#f8d7da", fg="#721c24")
             
             self.signature_verification.insert("1.0", verification_text)
             self.signature_verification.configure(state="disabled")
@@ -2292,8 +2304,8 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
         if operation == "Firmado":
             process_text += f"2. Hash del mensaje ({hash_algo}):\n   {data['message_hash']}\n\n"
             process_text += f"3. Cifrado del hash con clave privada:\n   Signature = Hash^d mod n\n"
-            process_text += f"   d = {str(self.signature_keys['private_key']['d'])[:20]}...\n"
-            process_text += f"   n = {str(self.signature_keys['private_key']['n'])[:20]}...\n\n"
+            process_text += f"   d = {str(self.signature_keys['private_key'][0])[:20]}...\n"
+            process_text += f"   n = {str(self.signature_keys['private_key'][1])[:20]}...\n\n"
             process_text += f"4. Firma digital generada:\n   {str(data['signature'])[:60]}...\n\n"
             process_text += f"Resultado: Mensaje firmado exitosamente\n"
             process_text += f"• La firma puede verificarse con la clave pública\n"
@@ -2302,8 +2314,8 @@ Uso recomendado: Solo para propósitos educativos y compatibilidad legacy."""
         else:  # Verificación
             process_text += f"2. Hash del mensaje recibido ({hash_algo}):\n   {data['message_hash']}\n\n"
             process_text += f"3. Descifrado de la firma con clave pública:\n   Hash_descifrado = Signature^e mod n\n"
-            process_text += f"   e = {self.signature_keys['public_key']['e']}\n"
-            process_text += f"   n = {str(self.signature_keys['public_key']['n'])[:20]}...\n\n"
+            process_text += f"   e = {self.signature_keys['public_key'][0]}\n"
+            process_text += f"   n = {str(self.signature_keys['public_key'][1])[:20]}...\n\n"
             process_text += f"4. Comparación de hashes:\n"
             process_text += f"   Hash calculado == Hash descifrado: {'SÍ' if data['is_valid'] else 'NO'}\n\n"
             process_text += f"Resultado: {'✅ FIRMA VÁLIDA' if data['is_valid'] else '❌ FIRMA INVÁLIDA'}\n"
@@ -2365,7 +2377,7 @@ Aplicaciones:
         self.signature_result.delete("1.0", tk.END)
         self.signature_result.configure(state="disabled")
         
-        self.signature_verification.configure(state="normal", bg="white")
+        self.signature_verification.configure(state="normal", bg="white", fg="black")
         self.signature_verification.delete("1.0", tk.END)
         self.signature_verification.configure(state="disabled")
         
@@ -3272,8 +3284,8 @@ Aplicaciones:
 CryptoUNS - Sistema Criptográfico Integral
 Versión 1.0
 
-Desarrollado como proyecto final de criptografía
-Universidad Nacional del Sur (UNS)
+Desarrollado como proyecto final de 2da Unidad del curso de Seguridad Informática
+Universidad Nacional del Santa (UNS)
 
 Características:
 • Algoritmos de criptografía clásica (César, Vigenère, Playfair)
@@ -3287,6 +3299,13 @@ Tecnologías utilizadas:
 • tkinter / ttkbootstrap (Interfaz gráfica)
 • pycryptodome (Algoritmos criptográficos)
 • pytest (Pruebas unitarias)
+
+Estudiantes participantes:
+- Armas Solorzano Brando Emanuel
+- Cruz Castillo Jhoan Antoni
+- Estefanero Placios Jael Andres
+- Flores Luera Miguel
+- Zelada Pulido Rodrigo Sebastian
 
 © 2025 - Todos los derechos reservados
         """
