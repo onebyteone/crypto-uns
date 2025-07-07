@@ -29,7 +29,8 @@ CryptoUNS es un sistema integral que implementa múltiples algoritmos criptográ
 
 ```
 📁 CryptoUNS/
-├── 🐍 main.py                 # Punto de entrada
+├── 🐍 main.py                 # Punto de entrada principal
+├── 📋 requirements.txt        # Dependencias del proyecto
 ├── 📁 src/
 │   ├── 🎨 gui/                # Interfaz gráfica
 │   ├── 🔐 crypto/             # Algoritmos criptográficos
@@ -37,8 +38,12 @@ CryptoUNS es un sistema integral que implementa múltiples algoritmos criptográ
 │   └── 📊 data/               # Configuración y datos
 ├── 📁 assets/                 # Recursos gráficos
 ├── 📁 docs/                   # Documentación
+│   ├── 📄 *.md                # Guías y manuales
+│   └── 📁 reports/            # Reportes de desarrollo
 ├── 📁 tests/                  # Pruebas unitarias
-└── 📁 dist/                   # Ejecutables
+├── 📁 examples/               # Ejemplos de uso
+├── 📁 scripts/                # Scripts de utilidad
+└── 📁 logs/                   # Archivos de log
 ```
 
 ## 🚀 Instalación
