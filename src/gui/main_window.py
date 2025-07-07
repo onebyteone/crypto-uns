@@ -2501,6 +2501,7 @@ Aplicaciones:
         # Variables para almacenar datos
         self.huffman_encoder = None
         self.last_encoded_data = None
+        self.original_text = None
     
     def huffman_encode(self):
         """Codificar texto con Huffman"""
@@ -2515,16 +2516,29 @@ Aplicaciones:
                 self.show_warning("El texto debe tener al menos 2 caracteres")
                 return
             
-            # Codificar con Huffman
-            encoded_data = self.huffman.encode(text)
+            # Verificar que no sea código binario
+            if all(c in '01 \n' for c in text) and len(text.replace(' ', '').replace('\n', '')) > 10:
+                self.show_warning("Detectado código binario en el campo.\nPara codificar, ingrese texto normal, no código binario.")
+                return
+            
+            # Guardar el texto original para referencia
+            self.original_text = text
+            
+            # Codificar con Huffman usando el método wrapper
+            encoded_data = self.huffman.encode_for_gui(text)
             self.huffman_encoder = self.huffman
             self.last_encoded_data = encoded_data
+            
+            # IMPORTANTE: Reemplazar el texto en el campo con el código binario
+            self.huffman_text.delete("1.0", tk.END)
+            self.huffman_text.insert("1.0", encoded_data['encoded'])
             
             # Mostrar resultado
             self.huffman_result.configure(state="normal")
             self.huffman_result.delete("1.0", tk.END)
             
-            result_text = f"Texto Codificado (Huffman):\n\n"
+            result_text = f"Texto Original: {self.original_text}\n\n"
+            result_text += f"Texto Codificado (Huffman):\n\n"
             result_text += f"Código binario:\n{encoded_data['encoded'][:200]}"
             if len(encoded_data['encoded']) > 200:
                 result_text += f"...\n(Mostrando primeros 200 bits de {len(encoded_data['encoded'])} totales)"
@@ -2532,7 +2546,9 @@ Aplicaciones:
             result_text += f"• Tamaño original: {encoded_data['original_size']} bits\n"
             result_text += f"• Tamaño comprimido: {encoded_data['compressed_size']} bits\n"
             result_text += f"• Ratio de compresión: {encoded_data['compression_ratio']:.2f}%\n"
-            result_text += f"• Ahorro de espacio: {encoded_data['space_saved']:.2f}%"
+            result_text += f"• Ahorro de espacio: {encoded_data['space_saved']:.2f}%\n\n"
+            result_text += f"El código binario ahora está en el campo de texto.\n"
+            result_text += f"Presione 'Decodificar' para recuperar el texto original."
             
             self.huffman_result.insert("1.0", result_text)
             self.huffman_result.configure(state="disabled")
@@ -2546,7 +2562,7 @@ Aplicaciones:
             # Mostrar árbol
             self.display_huffman_tree(encoded_data['tree_visualization'])
             
-            self.update_status(f"Texto codificado con Huffman - Compresión: {encoded_data['compression_ratio']:.1f}%")
+            self.update_status(f"Texto codificado con Huffman - Compresión: {encoded_data['compression_ratio']:.1f}% - Presione 'Decodificar' para recuperar el texto")
             
         except Exception as e:
             self.show_error(f"Error al codificar con Huffman: {str(e)}")
@@ -2554,38 +2570,68 @@ Aplicaciones:
     def huffman_decode(self):
         """Decodificar texto con Huffman"""
         try:
+            # Verificar si hay datos codificados disponibles
             if not self.last_encoded_data:
-                self.show_warning("Primero codifique un texto para poder decodificarlo")
+                self.show_warning("Para decodificar, primero debe:\n1. Escribir un texto normal\n2. Presionar 'Codificar'\n3. Luego presionar 'Decodificar'")
                 return
             
-            # Decodificar
-            decoded_text = self.huffman.decode(
+            # Obtener el código binario del campo de texto
+            binary_code = self.huffman_text.get("1.0", tk.END).strip()
+            
+            # Verificar que sea código binario válido
+            if not all(c in '01 \n' for c in binary_code):
+                self.show_warning("El campo debe contener código binario (solo 0s y 1s).\nPrimero codifique un texto para obtener el código binario.")
+                return
+            
+            # Limpiar espacios y saltos de línea del código binario
+            clean_binary = binary_code.replace(' ', '').replace('\n', '')
+            
+            if not clean_binary:
+                self.show_warning("No hay código binario válido para decodificar")
+                return
+            
+            # Verificar que el código binario coincida con el último codificado
+            if clean_binary != self.last_encoded_data['encoded']:
+                self.show_warning("El código binario no coincide con el último texto codificado.\nPor favor codifique un texto primero y luego decodifique.")
+                return
+            
+            # Decodificar usando el método wrapper
+            decoded_text = self.huffman.decode_for_gui(
                 self.last_encoded_data['encoded'], 
                 self.last_encoded_data['codes']
             )
+            
+            # IMPORTANTE: Reemplazar el código binario con el texto decodificado
+            self.huffman_text.delete("1.0", tk.END)
+            self.huffman_text.insert("1.0", decoded_text)
             
             # Mostrar resultado
             self.huffman_result.configure(state="normal")
             self.huffman_result.delete("1.0", tk.END)
             
             result_text = f"Texto Decodificado:\n\n"
-            result_text += f"{decoded_text}\n\n"
+            result_text += f"Texto recuperado: {decoded_text}\n\n"
             result_text += f"Verificación:\n"
-            original_text = self.huffman_text.get("1.0", tk.END).strip()
-            is_correct = decoded_text == original_text
+            is_correct = decoded_text == self.original_text
             result_text += f"• Decodificación {'✅ CORRECTA' if is_correct else '❌ INCORRECTA'}\n"
-            result_text += f"• Longitud original: {len(original_text)} caracteres\n"
+            result_text += f"• Texto original: '{self.original_text}'\n"
+            result_text += f"• Texto decodificado: '{decoded_text}'\n"
+            result_text += f"• Longitud original: {len(self.original_text)} caracteres\n"
             result_text += f"• Longitud decodificada: {len(decoded_text)} caracteres\n"
             
             if is_correct:
-                result_text += f"• ✅ El proceso de compresión es sin pérdidas"
+                result_text += f"\n✅ ÉXITO: El proceso de compresión Huffman es sin pérdidas\n"
+                result_text += f"El texto original ha sido recuperado perfectamente."
             else:
-                result_text += f"• ❌ Error en el proceso de decodificación"
+                result_text += f"\n❌ ERROR: Problema en la decodificación\n"
+                result_text += f"El texto decodificado no coincide con el original."
+            
+            result_text += f"\n\nPuede volver a codificar este texto presionando 'Codificar'."
             
             self.huffman_result.insert("1.0", result_text)
             self.huffman_result.configure(state="disabled")
             
-            self.update_status(f"Decodificación {'exitosa' if is_correct else 'fallida'}")
+            self.update_status(f"Decodificación {'exitosa' if is_correct else 'fallida'} - Texto original recuperado")
             
         except Exception as e:
             self.show_error(f"Error al decodificar: {str(e)}")
@@ -2672,11 +2718,48 @@ Aplicaciones:
     
     def load_huffman_example(self):
         """Cargar un ejemplo para Huffman"""
-        example_text = "ABRACADABRA! Este es un ejemplo de texto para probar la codificación Huffman. Los caracteres más frecuentes como A, R y espacios deberían tener códigos más cortos."
+        example_text = "HOLA MUNDO"
         
         self.huffman_text.delete("1.0", tk.END)
         self.huffman_text.insert("1.0", example_text)
-        self.update_status("Ejemplo cargado para codificación Huffman")
+        self.update_status("Ejemplo cargado: 'HOLA MUNDO' - Presione 'Codificar' para comenzar")
+        
+        # Limpiar variables
+        self.original_text = None
+        self.last_encoded_data = None
+        
+        # Mostrar instrucciones en el resultado
+        self.huffman_result.configure(state="normal")
+        self.huffman_result.delete("1.0", tk.END)
+        
+        instructions = """Ejemplo cargado: 'HOLA MUNDO'
+
+Flujo correcto de Huffman:
+
+1. CODIFICAR:
+   • El texto 'HOLA MUNDO' está en el campo
+   • Presione 'Codificar'
+   • El campo se llenará con código binario (ej: 1101100111...)
+   • Verá estadísticas de compresión
+
+2. DECODIFICAR:
+   • Con el código binario en el campo
+   • Presione 'Decodificar'
+   • El código binario se convertirá de vuelta a 'HOLA MUNDO'
+   • Verificará que la recuperación sea perfecta
+
+3. ANÁLISIS:
+   • Vea las pestañas: Frecuencias, Códigos, Árbol
+   • Comprenda cómo funciona la compresión
+
+¡IMPORTANTE! 
+• Codificar convierte texto → código binario
+• Decodificar convierte código binario → texto original
+
+¡Presione 'Codificar' para comenzar!"""
+        
+        self.huffman_result.insert("1.0", instructions)
+        self.huffman_result.configure(state="disabled")
     
     def clear_huffman_fields(self):
         """Limpiar campos de Huffman"""
@@ -2701,6 +2784,7 @@ Aplicaciones:
         # Limpiar variables
         self.huffman_encoder = None
         self.last_encoded_data = None
+        self.original_text = None
     
     def show_blockchain_screen(self):
         """Mostrar pantalla de Blockchain"""

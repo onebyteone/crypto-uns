@@ -285,6 +285,54 @@ class HuffmanCoding:
             result += self.visualize_tree(child, new_prefix, is_last_child)
         
         return result
+    
+    def encode_for_gui(self, text: str) -> Dict[str, Any]:
+        """
+        Codificar texto para la GUI con formato específico
+        
+        Args:
+            text (str): Texto a codificar
+            
+        Returns:
+            Dict[str, Any]: Datos formateados para la GUI
+        """
+        # Codificar con el método original
+        encoded_text, codes, tree = self.encode(text)
+        
+        # Obtener estadísticas
+        stats = self.get_compression_stats(text, encoded_text)
+        
+        # Obtener frecuencias
+        frequencies = self.build_frequency_table(text)
+        
+        # Visualizar árbol
+        tree_visualization = self.visualize_tree(tree)
+        
+        return {
+            'encoded': encoded_text,
+            'codes': codes,
+            'tree': tree,
+            'frequencies': frequencies,
+            'tree_visualization': tree_visualization,
+            'original_size': len(text) * 8,  # bits
+            'compressed_size': len(encoded_text),  # bits
+            'compression_ratio': (len(encoded_text) / (len(text) * 8)) * 100,
+            'space_saved': ((len(text) * 8 - len(encoded_text)) / (len(text) * 8)) * 100
+        }
+    
+    def decode_for_gui(self, encoded_text: str, codes: Dict[str, str]) -> str:
+        """
+        Decodificar texto para la GUI
+        
+        Args:
+            encoded_text (str): Texto codificado
+            codes (Dict[str, str]): Diccionario de códigos
+            
+        Returns:
+            str: Texto decodificado
+        """
+        # Usar el método de decodificación original
+        return self.decode(encoded_text, self.root)
 
 # ===== SIMULADOR BLOCKCHAIN =====
 class Block:
@@ -422,7 +470,11 @@ class Blockchain:
         if block.hash != block.calculate_hash():
             return False
         
-        # Verificar prueba de trabajo (si aplica)
+        # El bloque génesis no necesita prueba de trabajo
+        if block.index == 0:
+            return True
+        
+        # Verificar prueba de trabajo para otros bloques
         if hasattr(self, 'difficulty') and self.difficulty > 0:
             if not block.hash.startswith("0" * self.difficulty):
                 return False
